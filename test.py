@@ -115,38 +115,46 @@ ui.switch('Dark mode', on_change=switch)
 
 with ui.tab_panels(tabs, value=one).classes('w-full'):
     with ui.tab_panel(one):
-        imie_input = ui.input('Imię')
-        nazwisko_input = ui.input('Nazwisko')
-        pesel_input = ui.input("PESEL")
+        imie_input = ui.input('Imię').classes('m-auto')
+        nazwisko_input = ui.input('Nazwisko').classes('m-auto')
+        pesel_input = ui.input("PESEL").classes('m-auto')
         avatar_url = generate_avatar()
-        avatar_image = ui.image(avatar_url).classes('w-24 h-24')
-        ui.button('Generuj nowy avatar', on_click=refresh_avatar)
-        ui.button('Dodaj użytkownika', on_click=add_user)
+        avatar_image = ui.image(avatar_url).classes('w-32 h-32').classes('m-auto')
+        ui.button('Generuj nowy avatar', on_click=refresh_avatar).classes('m-auto')
+        ui.button('Dodaj użytkownika', on_click=add_user).classes('m-auto')
 
     with ui.tab_panel(two):
         columns = [
-            {'name': 'name', 'label': 'Imię', 'field': 'name', 'align': 'left'},
-            {'name': 'surname', 'label': 'Nazwisko', 'field': 'surname'},
-            {'name': 'pesel', 'label': 'PESEL', 'field': 'pesel'},
-            {'name': 'avatar', 'label': 'Avatar', 'field': 'avatar'},
-            {'name': 'id', 'label': 'Akcja', 'field': 'id'},  # Kolumna akcji
+            {'name': 'name', 'label': 'Imię', 'field': 'name', 'align': 'center'},
+            {'name': 'surname', 'label': 'Nazwisko', 'field': 'surname', 'align': 'center'},
+            {'name': 'pesel', 'label': 'PESEL', 'field': 'pesel', 'align': 'center'},
+            {'name': 'avatar', 'label': 'Avatar', 'field': 'avatar', 'align': 'center'},
+            {'name': 'id', 'label': 'Akcja', 'field': 'id', 'align': 'center'},  # Kolumna akcji
         ]
         table = ui.table(columns=columns, rows=[], row_key='id',
-                         column_defaults={'align': 'left', 'headerClasses': 'uppercase text-primary'}).classes('w-full')
+                         column_defaults={'align': 'center', 'headerClasses': 'uppercase text-primary', 'justify-content' : 'center'}).classes('w-full')
 
-        # Slot dla kolumny "avatar"
         table.add_slot('body-cell-avatar', '''
-        <q-td key="avatar" :props="props">
-            <img :src="props.row.avatar" class="w-32 h-32 rounded-full">
+        <q-td key="avatar" :props="props" class="text-center">
+            <div class="flex justify-center">
+                <img :src="props.row.avatar" class="w-52 h-52 rounded-full">
+            </div>
         </q-td> 
         ''')
-        table.add_slot('body-cell-id', '''<q-td auto-width >
-            <q-btn size="sm" color="warning" round dense icon="delete"
-                @click="() => $parent.$emit('delete', props.row)"
-            />
-        </q-td>''')
+
+        table.add_slot('body-cell-id', '''
+        <q-td key="id" class="text-center">
+            <div class="flex justify-center items-center gap-2">
+                <q-btn color="red" dense icon="delete" 
+                    @click="() => $parent.$emit('delete', props.row)">Usuń</q-btn>
+                <q-btn color="primary" dense icon="edit"
+                    @click="() => $parent.$emit('edit', props.row)">Edytuj</q-btn>
+            </div>
+        </q-td>
+        ''')
         update_table()
     with ui.tab_panel(three):
         ui.label('Test')
 table.on('delete', del_user)
+table.on('edit', del_user)
 ui.run()
