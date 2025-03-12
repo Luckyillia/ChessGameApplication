@@ -1,4 +1,4 @@
-from nicegui import ui
+from nicegui import events,ui
 import string
 import random
 import json
@@ -6,7 +6,6 @@ import os
 
 file_name = 'data.json'
 avatar_url = ""
-dark = ui.dark_mode()
 
 def load_data():
     if not os.path.exists(file_name):
@@ -37,7 +36,9 @@ def add_user():
     users = load_data()
     if imie_input.value and nazwisko_input.value and pesel_input.value:
         if len(pesel_input.value) == 11 and pesel_input.value.isdigit():
+            user_id = str(len(users))  # Generate a simple unique ID based on the number of users
             users.append({
+                "id": user_id,
                 "name": imie_input.value,
                 "surname": nazwisko_input.value,
                 "pesel": pesel_input.value,
@@ -53,6 +54,29 @@ def add_user():
         else:
             ui.notify('PESEL musi zawierać 11 cyfr', color='red')
 
+
+def del_user(e: events.GenericEventArguments) -> None:
+    print(f"🔹 Otrzymane argumenty: {e}")  # Debugowanie
+    # Checking if event.args is a dictionary and retrieving user ID
+    user_id = e.args.get('id') if isinstance(e.args, dict) else None
+    if not user_id:
+        print("❌ Błąd: ID użytkownika nie zostało przekazane!")
+        ui.notify("❌ Błąd: ID użytkownika nie zostało przekazane!", color="red")  # Notify user of error
+        return
+
+    # Load user data and filter out the user with the provided ID
+    users = load_data()
+    updated_users = [user for user in users if user['id'] != user_id]  # Remove user with matching ID
+    if len(updated_users) == len(users):
+        print("❌ Błąd: Użytkownik nie został znaleziony!")
+        ui.notify("❌ Błąd: Użytkownik nie został znaleziony!", color="red")
+        return
+
+    write_data(updated_users)  # Save the updated list of users
+    update_table()  # Refresh the UI or data table
+    ui.notify("✅ Użytkownik usunięty!", color="green")  # Success notification
+
+
 def update_table():
     users = load_data()
     table.rows.clear()
@@ -62,15 +86,19 @@ def update_table():
             'name': user["name"],
             'surname': user["surname"],
             'pesel': user["pesel"],
-            'avatar': user["avatar"]
+            'avatar': user["avatar"],
+            'id': user['id']
         })
     table.update()
 
 def switch(event):
+    print(event)
     if event.value:
-        dark.enable()
+        ui.dark_mode().enable()
+        print('dark')
     else:
-        dark.disable()
+        ui.dark_mode().disable()
+        print('white')
 
 def refresh_avatar():
     global avatar_url
@@ -81,6 +109,7 @@ def refresh_avatar():
 with ui.tabs().classes('w-full') as tabs:
     one = ui.tab('Dodaj użytkownika')
     two = ui.tab('Lista użytkowników')
+    three = ui.tab('Szachy')
 
 ui.switch('Dark mode', on_change=switch)
 
@@ -100,16 +129,24 @@ with ui.tab_panels(tabs, value=one).classes('w-full'):
             {'name': 'surname', 'label': 'Nazwisko', 'field': 'surname'},
             {'name': 'pesel', 'label': 'PESEL', 'field': 'pesel'},
             {'name': 'avatar', 'label': 'Avatar', 'field': 'avatar'},
+            {'name': 'id', 'label': 'Akcja', 'field': 'id'},  # Kolumna akcji
         ]
-        table = ui.table(columns=columns, rows=[], row_key='name',
+        table = ui.table(columns=columns, rows=[], row_key='id',
                          column_defaults={'align': 'left', 'headerClasses': 'uppercase text-primary'}).classes('w-full')
 
+        # Slot dla kolumny "avatar"
         table.add_slot('body-cell-avatar', '''
         <q-td key="avatar" :props="props">
             <img :src="props.row.avatar" class="w-32 h-32 rounded-full">
-        </q-td>
+        </q-td> 
         ''')
-
+        table.add_slot('body-cell-id', '''<q-td auto-width >
+            <q-btn size="sm" color="warning" round dense icon="delete"
+                @click="() => $parent.$emit('delete', props.row)"
+            />
+        </q-td>''')
         update_table()
-
+    with ui.tab_panel(three):
+        ui.label('Test')
+table.on('delete', del_user)
 ui.run()
