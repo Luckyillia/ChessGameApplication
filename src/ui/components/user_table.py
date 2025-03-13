@@ -13,7 +13,7 @@ class UserTable:
         ]
         self.table = ui.table(columns=self.columns, rows=[], row_key='id',
                               column_defaults={'align': 'center', 'headerClasses': 'uppercase text-primary', 'justify-content': 'center'}).classes('w-full')
-        self.table.add_slot('body', '''
+        self.table.add_slot('body', ''' 
                     <q-tr :props="props">
                         <q-td v-for="col in props.cols" :key="col.name" :props="props" 
                               :style="col.name === 'id' ? 'width: 15%;' : 'width: 21.25%;'" class="text-center">

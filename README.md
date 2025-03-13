@@ -1,59 +1,134 @@
 # User Management System
 
-This project is a simple user management system built using NiceGUI. It allows users to add new users with their details, including a randomly generated avatar, and view the list of added users. The system also supports dark mode.
+The **User Management System** is a Python-based application that allows managing users, including adding, editing, and deleting their data, as well as generating random avatars. The application uses the `nicegui` library to create a user-friendly interface designed for simplicity and ease of use.
 
+
+
+---
 
 ## Installation
 
 1. Clone the repository:
-    ```bash
-    git clone https://gitlab.makolab.net/interns/cc/niceguidemo
-    cd NiceGUIdemo
-    ```
-3. Upgrade pip:
-    ```bash
-    python -m pip install --upgrade pip
-    ```
+   ```bash
+   git clone https://gitlab.makolab.net/interns/cc/niceguidemo
+   cd NiceGUIdemo
+   ```
 
-3. Install the required dependencies:
-    ```bash
-    pip install nicegui
-    ```
+2. Create a virtual environment (optional but recommended):
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # Linux/MacOS
+   .\.venv\Scripts\activate   # Windows
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Run the application:
+   ```bash
+   python -m src.main
+   ```
+
+---
+
+## Project Structure
+
+```
+NiceGUIdemo/
+│
+├── src/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── user.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── user_service.py
+│   └── ui/
+│       ├── __init__.py
+│       ├── user_ui.py
+│       └── components/
+│           ├── __init__.py
+│           └── user_table.py
+│
+├── data/
+│   └── data.json
+│
+└── requirements.txt
+```
+
+---
 
 ## Usage
 
-1. Run the application:
-    ```bash
-    python test.py
-    ```
+1. **Adding a User**:
+    - Navigate to the "Add User" tab.
+    - Fill in the required fields: `First Name`, `Last Name`, and `PESEL`.
+    - Click "Add User" to save the data.
 
-2. Open your browser and navigate to `http://127.0.0.1:8080`.
+2. **Viewing Users**:
+    - Go to the "User List" tab to see the list of registered users.
 
-## Code Overview
+3. **Editing a User**:
+    - In the "User List" tab, select a user and update their details.
 
-### `app.py`
+4. **Deleting a User**:
+    - In the "User List" tab, choose a user and remove them from the database.
 
-This file contains the main logic of the application.
+5. **Generating a New Avatar**:
+    - In the "Add User" tab, click "Generate New Avatar" to get a unique avatar.
 
-- **Imports**: Import necessary modules and libraries.
-- **Global Variables**: Define global variables like `file_name` and `avatar_url`.
-- **Functions**:
-  - `load_data()`: Load user data from a JSON file.
-  - `write_data(users)`: Write user data to a JSON file.
-  - `url_generator(size, chars)`: Generate a random URL for avatars.
-  - `generate_avatar()`: Generate a random avatar URL.
-  - `add_user()`: Add a new user to the list.
-  - `update_table()`: Update the user table with the latest data.
-  - `switch(event)`: Toggle dark mode.
-  - `refresh_avatar()`: Refresh the avatar image.
-- **UI**:
-  - Create tabs for adding users and viewing the user list.
-  - Create input fields for user details.
-  - Create buttons for generating avatars and adding users.
-  - Create a table to display the list of users.
+6. **Switching Dark Mode**:
+    - Use the "Dark Mode" toggle to switch between light and dark themes.
 
-## Contact
+---
 
-Your Name - [@lucky_illia](https://www.instagram.com/lucky_ilIia/#) - zaichenko.illia@makolab.com
+## Technologies
 
-Project Link: [NiceGUIDemo](https://gitlab.makolab.net/interns/cc/niceguidemo)
+- **Python** – Backend logic.
+- **NiceGUI** – User interface development.
+- **JSON** – Local storage for user data.
+
+---
+
+## Sample Data Structure
+
+The application stores user data in a JSON file (`data/data.json`). Example data structure:
+
+```json
+{
+    "users": [
+        {
+            "id": "e7aa07c8-9982-45f5-b1c4-713a5dde317e",
+            "name": "Anna",
+            "surname": "Nowak",
+            "pesel": "12345678901",
+            "avatar": "https://robohash.org/ABCDEF"
+        }
+    ]
+}
+```
+
+---
+
+## Contributions
+
+We welcome contributions to improve the project! Feel free to report bugs, suggest new features, or submit Pull Requests.
+
+---
+
+## License
+
+This project is licensed under the MIT License. Details can be found in the `LICENSE` file.
+
+---
+
+## Authors
+
+- **Illia Zaichenko** – *Original creator* – [zaichemko.illia](https://gitlab.makolab.net/zaichenko.illia)
+- **Maximilian Kuster** – *Original creator* – [kuster.maximilian](https://gitlab.makolab.net/kuster.maximilian)
+
+If you have any questions or suggestions, feel free to reach out! 🚀
