@@ -1,0 +1,5 @@
+# src/models/__init__.py
+
+from .user import User
+
+__all__ = ['User']  # Definiuje, co będzie dostępne przy imporcie z pakietu models.
