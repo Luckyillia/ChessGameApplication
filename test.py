@@ -34,18 +34,18 @@ def generate_avatar():
 def add_user():
     global avatar_url
     users = load_data()
-    if imie_input.value and nazwisko_input.value and pesel_input.value:
+    if name_input.value and surname_input.value and pesel_input.value:
         if len(pesel_input.value) == 11 and pesel_input.value.isdigit():
             user_id = str(len(users))  # Generate a simple unique ID based on the number of users
             users.append({
                 "id": user_id,
-                "name": imie_input.value,
-                "surname": nazwisko_input.value,
+                "name": name_input.value,
+                "surname": surname_input.value,
                 "pesel": pesel_input.value,
                 "avatar": avatar_url
             })
-            imie_input.value = ''
-            nazwisko_input.value = ''
+            name_input.value = ''
+            surname_input.value = ''
             pesel_input.value = ''
             avatar_url = generate_avatar()
             avatar_image.set_source(avatar_url)
@@ -75,6 +75,32 @@ def del_user(e: events.GenericEventArguments) -> None:
     write_data(updated_users)  # Save the updated list of users
     update_table()  # Refresh the UI or data table
     ui.notify("✅ Użytkownik usunięty!", color="green")  # Success notification
+
+def edit_user(e: events.GenericEventArguments):
+    """Obsługuje edycję użytkownika i zapisuje zmiany do pliku."""
+    print(f"🔹 Otrzymane argumenty: {e}")
+
+    user_data = e.args.copy()  # Tworzymy kopię danych, aby nie modyfikować oryginalnych
+    user_id = user_data.pop('id', None)  # Pobieramy ID i usuwamy je z danych
+    user_data.pop('editing', None)  # Usuwamy pole 'editing', jeśli istnieje
+
+    if not user_id:
+        ui.notify("❌ Błąd: Brak ID użytkownika!", color="red")
+        return
+
+    users = load_data()  # Wczytanie listy użytkowników
+
+    for user in users:
+        if user["id"] == user_id:
+            user.update(user_data)  # Aktualizacja danych użytkownika
+
+            write_data(users)  # Zapis zmian do pliku
+            ui.notify("✅ Zmiany zapisane!", color="green")
+            update_table()  # Odświeżenie tabeli
+            return
+
+    ui.notify("❌ Błąd: Użytkownik nie znaleziony!", color="red")
+
 
 
 def update_table():
@@ -115,8 +141,8 @@ ui.switch('Dark mode', on_change=switch)
 
 with ui.tab_panels(tabs, value=one).classes('w-full'):
     with ui.tab_panel(one):
-        imie_input = ui.input('Imię').classes('m-auto')
-        nazwisko_input = ui.input('Nazwisko').classes('m-auto')
+        name_input = ui.input('Imię').classes('m-auto')
+        surname_input = ui.input('Nazwisko').classes('m-auto')
         pesel_input = ui.input("PESEL").classes('m-auto')
         avatar_url = generate_avatar()
         avatar_image = ui.image(avatar_url).classes('w-32 h-32').classes('m-auto')
@@ -134,27 +160,45 @@ with ui.tab_panels(tabs, value=one).classes('w-full'):
         table = ui.table(columns=columns, rows=[], row_key='id',
                          column_defaults={'align': 'center', 'headerClasses': 'uppercase text-primary', 'justify-content' : 'center'}).classes('w-full')
 
-        table.add_slot('body-cell-avatar', '''
-        <q-td key="avatar" :props="props" class="text-center">
-            <div class="flex justify-center">
-                <img :src="props.row.avatar" class="w-52 h-52 rounded-full">
-            </div>
-        </q-td> 
-        ''')
+        table.add_slot('body', '''
+            <q-tr :props="props">
+                <q-td v-for="col in props.cols" :key="col.name" :props="props" 
+                      :style="col.name === 'id' ? 'width: 15%;' : 'width: 21.25%;'" class="text-center">
 
-        table.add_slot('body-cell-id', '''
-        <q-td key="id" class="text-center">
-            <div class="flex justify-center items-center gap-2">
-                <q-btn color="red" dense icon="delete" 
-                    @click="() => $parent.$emit('delete', props.row)">Usuń</q-btn>
-                <q-btn color="primary" dense icon="edit"
-                    @click="() => $parent.$emit('edit', props.row)">Edytuj</q-btn>
-            </div>
-        </q-td>
+                    <template v-if="col.name === 'avatar'">
+                        <div class="flex justify-center">
+                            <img :src="props.row.avatar" class="w-32 h-32 rounded-full">
+                        </div>
+                    </template>
+
+                    <template v-else-if="col.name === 'id'">
+                        <div class="flex justify-center items-center gap-4 p-2">
+                            <q-btn color="red" dense icon="delete" size="md"
+                                @click="() => $parent.$emit('delete', props.row)">Usuń</q-btn>
+
+                            <q-btn v-if="!props.row.editing" color="primary" dense icon="edit" size="md"
+                                @click="props.row.editing = true">Edytuj</q-btn>
+
+                            <q-btn v-else color="green" dense icon="save" size="md"
+                                @click="() => { 
+                                    $parent.$emit('edit', props.row); 
+                                    props.row.editing = false;
+                                }">Zapisz</q-btn>
+                        </div>
+                    </template>
+
+                    <template v-else>
+                        <q-input v-if="props.row.editing" v-model="props.row[col.name]" dense outlined 
+                                 :label="col.label" class="w-full"/>
+                        <span v-else class="block text-center">{{ col.value }}</span>
+                    </template>
+
+                </q-td>
+            </q-tr>
         ''')
         update_table()
     with ui.tab_panel(three):
         ui.label('Test')
 table.on('delete', del_user)
-table.on('edit', del_user)
+table.on('edit', edit_user)
 ui.run()
