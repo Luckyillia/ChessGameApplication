@@ -1,6 +1,7 @@
 from nicegui import ui
 from src.services.user_service import UserService
 from src.ui.components.user_table import UserTable
+from src.ui.components.user_chess import Chess
 import string
 import random
 
@@ -35,7 +36,7 @@ class UserUI:
                 self.user_table = UserTable(self.user_service)
 
             with ui.tab_panel(three):
-                ui.label('Test')
+                chess = Chess()
 
     def add_user(self):
         if self.name_input.value and self.surname_input.value and self.pesel_input.value:
