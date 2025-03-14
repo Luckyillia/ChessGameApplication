@@ -8,7 +8,13 @@ class UserService:
         self.file_name = file_name
 
     def load_data(self):
+        directory = os.path.dirname(self.file_name)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         if not os.path.exists(self.file_name):
+            return []
+        if os.stat(self.file_name).st_size == 0:
             return []
         try:
             with open(self.file_name, 'r', encoding='utf-8') as file:
@@ -19,13 +25,22 @@ class UserService:
 
     def write_data(self, users):
         try:
-            with open(self.file_name, "w", encoding="utf-8") as outfile:
-                json.dump(
-                    {"users":  users},  # Konwersja do dict
-                    outfile,
-                    indent=4,
-                    ensure_ascii=False
-                )
+            directory = os.path.dirname(self.file_name)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+
+            data_to_write = json.dumps(
+                {"users": users},  # Konwersja do dict
+                indent=4,
+                ensure_ascii=False
+            )
+
+            temp_file_name = f"{self.file_name}.tmp"
+            with open(temp_file_name, "w", encoding="utf-8") as temp_file:
+                temp_file.write(data_to_write)
+
+            os.replace(temp_file_name, self.file_name)
+
         except Exception as e:
             print(f"❌ Błąd zapisu do pliku: {e}")
 

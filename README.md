@@ -8,6 +8,8 @@ The **User Management System** is a Python-based application that allows managin
 
 ## Installation
 
+### This project require Python 3.12
+
 1. Clone the repository:
    ```bash
    git clone https://gitlab.makolab.net/interns/cc/niceguidemo
@@ -21,12 +23,17 @@ The **User Management System** is a Python-based application that allows managin
    .\.venv\Scripts\activate   # Windows
    ```
 
-3. Install dependencies:
+3. Upgrade pip:
+   ```bash
+   python.exe -m pip install --upgrade pip
+   ```
+
+4. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Run the application:
+5. Run the application:
    ```bash
    python -m src.main
    ```
