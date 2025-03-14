@@ -1,1 +1,4 @@
 src/data/data.json
+*__pycache__/
+*.tmp
+.idea
