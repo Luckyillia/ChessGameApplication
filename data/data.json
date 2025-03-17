@@ -1,0 +1,18 @@
+{
+    "users": [
+        {
+            "id": "f90f2ce1-2078-422a-b4b5-0377bbfd4a14",
+            "name": "illia",
+            "surname": "ziachenko",
+            "pesel": "11111111111",
+            "avatar": "https://robohash.org/FQ1GB"
+        },
+        {
+            "id": "c546b588-9f78-45ef-833e-5b1aa9992523",
+            "name": "illia",
+            "surname": "ziachenko",
+            "pesel": "11111111111",
+            "avatar": "https://robohash.org/70UR8"
+        }
+    ]
+}
