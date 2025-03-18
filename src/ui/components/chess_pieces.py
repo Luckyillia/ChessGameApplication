@@ -87,6 +87,7 @@ class Pawn(Piece):
 
             if not self.is_moved and 0 <= self.x + 2 * direction < 8 and board[self.x + 2 * direction][self.y] is None:
                 moves.append((self.x + 2 * direction, self.y))
+                self.is_moved = True
 
         for dy in [-1, 1]:
             if 0 <= self.y + dy < 8 and 0 <= self.x + direction < 8:
