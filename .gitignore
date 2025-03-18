@@ -1,4 +1,4 @@
-src/data/data.json
+src/data/
 *__pycache__/
 *.tmp
 .idea/
