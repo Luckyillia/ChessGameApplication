@@ -1,4 +1,3 @@
-# user_chess.py
 from nicegui import ui
 from functools import partial
 from src.ui.components.chess_pieces import King, Queen, Rook, Knight, Bishop, Pawn
@@ -13,6 +12,8 @@ class Chess:
         self.grid = None
         self.board = self.initialize_board()
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
+        self.white_captured = []
+        self.black_captured = []
         self.create_chessboard()
 
     def initialize_board(self):
@@ -35,8 +36,8 @@ class Chess:
             for i in range(self.board_row):
                 for j in range(self.board_col):
                     color = '#769656' if (i + j) % 2 == 0 else '#EEEED2'
-                    with ui.element('div').style(f'background-color: {color}; width: 96px; height: 96px;').on(
-                            'click', partial(self.handle_square_click, i, j)) as square:
+                    with ui.element('div').style(f'background-color: {color}; width: 100px; height: 100px;').on(
+                            'click', partial(self.handle_square_click, i, j)) as square:  # Zwiększenie rozmiaru kwadratów
                         self.squares[i][j] = square
                         piece = self.board[i][j]
                         if piece:
@@ -46,6 +47,7 @@ class Chess:
 
                             with square:
                                 ui.image(image_path)
+        self.update_captured_pieces()
 
     def handle_square_click(self, i, j):
         piece = self.board[i][j]
@@ -67,16 +69,35 @@ class Chess:
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
+
+        # Check if trying to capture own piece
         if target_piece and piece.color == target_piece.color:
             ui.notify('Nie możesz zbić własnej figury!', color='red')
             return
+        
+        # Capture the piece (avoid double addition of pawns)
+        if target_piece:
+            if target_piece.color == 'white' and target_piece not in self.white_captured:
+                self.white_captured.append(target_piece)
+            elif target_piece.color == 'black' and target_piece not in self.black_captured:
+                self.black_captured.append(target_piece)
+        
+        # Move the piece
         self.board[start_row][start_col] = None
         piece.move_piece(end_row, end_col)
         self.board[end_row][end_col] = piece
+        
+        # Update the chessboard
         self.update_square(start_row, start_col)
         self.update_square(end_row, end_col)
+        
+        # Change turn
         self.turn = 'black' if self.turn == 'white' else 'white'
+        
         ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
+        
+        # Update captured pieces
+        self.update_captured_pieces()
 
     def update_square(self, row, col):
         square = self.squares[row][col]
@@ -90,3 +111,48 @@ class Chess:
 
             with square:
                 ui.image(image_path)
+
+    def update_captured_pieces(self):
+        global captured_white_grid, captured_black_grid
+
+        # Create grids if not already initialized
+        if 'captured_white_grid' not in globals():
+            captured_white_grid = ui.grid(columns=4).classes('w-auto m-auto gap-0').style(
+                'position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: grid; grid-template-columns: repeat(4, 1fr); direction: rtl;'
+            )
+        if 'captured_black_grid' not in globals():
+            captured_black_grid = ui.grid(columns=4).classes('w-auto m-auto gap-0').style(
+                'position: absolute; top: 50%; left: 0; transform: translateY(-50%);'
+            )
+
+        # Clear previous captured pieces display
+        captured_white_grid.clear()
+        captured_black_grid.clear()
+
+        # Display captured white pieces (from right to left, new row after 4 items)
+        with captured_white_grid:
+            for piece in reversed(self.white_captured):  # Odwracamy listę, aby wypełniało się od prawej
+                with ui.element('div').style('width: 80px; height: 80px;').classes('m-auto'):
+                    piece_type = piece.__class__.__name__.lower()
+                    image_path = f'./src/img/white-pieces/{piece_type}-white.png'
+                    ui.image(image_path)
+
+        # Display captured black pieces (zwykły układ od lewej do prawej)
+        with captured_black_grid:
+            for piece in self.black_captured:
+                with ui.element('div').style('width: 80px; height: 80px;').classes('m-auto'):
+                    piece_type = piece.__class__.__name__.lower()
+                    image_path = f'./src/img/black-pieces/{piece_type}-black.png'
+                    ui.image(image_path)
+
+
+
+
+
+
+
+
+
+
+
+
