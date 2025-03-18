@@ -44,10 +44,10 @@ class UserService:
         except Exception as e:
             print(f"❌ Błąd zapisu do pliku: {e}")
 
-    def add_user(self, name, surname, pesel, avatar):
+    def add_user(self, name, surname, username, password, pesel, avatar):
         users = self.load_data()
         user_id = str(uuid.uuid4())
-        new_user = User(user_id, name, surname, pesel, avatar).to_dict()
+        new_user = User(user_id, name, surname, username, password, pesel, avatar).to_dict()
         users.append(new_user)
         self.write_data(users)
 

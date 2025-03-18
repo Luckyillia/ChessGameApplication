@@ -1,4 +1,8 @@
-src/data/data.json
+src/data/
+data/
 *__pycache__/
 *.tmp
-.idea
+.idea/
+.venv/
+venv/
+.nicegui/
