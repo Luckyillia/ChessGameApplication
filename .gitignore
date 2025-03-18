@@ -1,6 +1,8 @@
 src/data/
+data/
 *__pycache__/
 *.tmp
 .idea/
 .venv/
 venv/
+.nicegui/

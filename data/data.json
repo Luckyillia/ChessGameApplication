@@ -1,18 +1,49 @@
 {
     "users": [
         {
-            "id": "f90f2ce1-2078-422a-b4b5-0377bbfd4a14",
-            "name": "illia",
-            "surname": "ziachenko",
+            "id": "f11165e9-03a7-45b4-8e20-ca6af250d60e",
+            "name": "Max",
+            "surname": "Kuster",
+            "username": "kuster.max",
+            "password": "1234",
             "pesel": "11111111111",
-            "avatar": "https://robohash.org/FQ1GB"
+            "avatar": "https://robohash.org/EUMPZ"
         },
         {
-            "id": "c546b588-9f78-45ef-833e-5b1aa9992523",
-            "name": "illia",
-            "surname": "ziachenko",
-            "pesel": "11111111111",
-            "avatar": "https://robohash.org/70UR8"
+            "id": "cb3a0403-0c92-42bd-8869-34f6edef7721",
+            "name": "Illia",
+            "surname": "Zaichenko",
+            "username": "lucky_illia",
+            "password": "1234",
+            "pesel": "22222222222",
+            "avatar": "https://robohash.org/1TTJN"
+        },
+        {
+            "id": "a3730f9d-6a9d-4d68-a9bc-75cc3b7b4afc",
+            "name": "Cos",
+            "surname": "Cos",
+            "username": "cos",
+            "password": "cos",
+            "pesel": "33333333333",
+            "avatar": "https://robohash.org/KLLN1"
+        },
+        {
+            "id": "69ade194-5119-46c3-bb28-b594a64a3e07",
+            "name": "Jak",
+            "surname": "Jak",
+            "username": "jak",
+            "password": "jak",
+            "pesel": "44444444444",
+            "avatar": "https://robohash.org/KCR5D"
+        },
+        {
+            "id": "db5c5df7-c28c-4a03-a142-939e41c87931",
+            "name": "bot",
+            "surname": "bot",
+            "username": "bot",
+            "password": "bot",
+            "pesel": "55555555555",
+            "avatar": "https://robohash.org/8CG6E"
         }
     ]
 }
