@@ -1,3 +1,5 @@
+from nicegui import ui
+
 class Piece:
     def __init__(self, color, x, y):
         self.color = color
@@ -74,21 +76,24 @@ class Bishop(Piece):
 
 
 class Pawn(Piece):
-    def __init__(self, color, x, y):
+    def __init__(self, color, x, y, chess):
         super().__init__(color, x, y)
         self.is_moved = False
+        self.chess = chess
 
     def available_moves(self, board):
         moves = []
         direction = 1 if self.color == 'white' else -1
 
+        # Single step forward
         if 0 <= self.x + direction < 8 and board[self.x + direction][self.y] is None:
             moves.append((self.x + direction, self.y))
 
+            # Double step forward (only if the pawn hasn't moved)
             if not self.is_moved and 0 <= self.x + 2 * direction < 8 and board[self.x + 2 * direction][self.y] is None:
                 moves.append((self.x + 2 * direction, self.y))
-                self.is_moved = True
 
+        # Capturing diagonally
         for dy in [-1, 1]:
             if 0 <= self.y + dy < 8 and 0 <= self.x + direction < 8:
                 target = board[self.x + direction][self.y + dy]
@@ -96,3 +101,28 @@ class Pawn(Piece):
                     moves.append((self.x + direction, self.y + dy))
 
         return moves
+
+    def move_piece(self, new_x, new_y, board):
+        """Moves the pawn and handles promotion."""
+        self.x = new_x
+        self.y = new_y
+        self.is_moved = True
+        if (self.color == 'white' and self.x == 7) or (self.color == 'black' and self.x == 0):
+            if self.promote_pawn(board):
+                return True
+
+    def promote_pawn(self, board):
+        """Handles pawn promotion to a chosen piece."""
+        def select_promotion(piece_name):
+            piece_classes = {'Queen': Queen, 'Rook': Rook, 'Bishop': Bishop, 'Knight': Knight}
+            board[self.x][self.y] = piece_classes[piece_name](self.color, self.x, self.y)
+            ui.notify(f"Pionek promowany na {piece_name}!", color='green')
+            dialog.close()
+            self.chess.update_square(self.x, self.y)
+
+        with ui.dialog() as dialog, ui.card():
+            ui.label('Promote your pawn').classes('text-xl font-bold')
+            with ui.row():
+                for strname in ['Queen', 'Rook', 'Bishop', 'Knight']:
+                    ui.button(strname, on_click=lambda name=strname: select_promotion(name)).classes('m-2')
+        dialog.open()

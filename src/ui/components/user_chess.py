@@ -19,12 +19,12 @@ class Chess:
         return [
             [Rook('white', 0, 0), Knight('white', 0, 1), Bishop('white', 0, 2), Queen('white', 0, 3),
              King('white', 0, 4), Bishop('white', 0, 5), Knight('white', 0, 6), Rook('white', 0, 7)],
-            [Pawn('white', 1, i) for i in range(8)],
+            [Pawn('white', 1, i, self) for i in range(8)],
             [None] * 8,
             [None] * 8,
             [None] * 8,
             [None] * 8,
-            [Pawn('black', 6, i) for i in range(8)],
+            [Pawn('black', 6, i, self) for i in range(8)],
             [Rook('black', 7, 0), Knight('black', 7, 1), Bishop('black', 7, 2), Queen('black', 7, 3),
              King('black', 7, 4), Bishop('black', 7, 5), Knight('black', 7, 6), Rook('black', 7, 7)]
         ]
@@ -71,7 +71,11 @@ class Chess:
             ui.notify('Nie możesz zbić własnej figury!', color='red')
             return
         self.board[start_row][start_col] = None
-        piece.move_piece(end_row, end_col)
+        if isinstance(piece, Pawn):
+            if piece.move_piece(end_row, end_col, self.board):
+                self.update_square(end_row, end_col)
+        else:
+            piece.move_piece(end_row, end_col)
         self.board[end_row][end_col] = piece
         self.update_square(start_row, start_col)
         self.update_square(end_row, end_col)
