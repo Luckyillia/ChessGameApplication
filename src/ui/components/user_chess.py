@@ -14,7 +14,9 @@ class Chess:
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
         self.white_captured = []
         self.black_captured = []
+        self.last_move = None  # Dodaj śledzenie ostatniego ruchu
         self.create_chessboard()
+
 
     def initialize_board(self):
         return [
@@ -36,8 +38,11 @@ class Chess:
             for i in range(self.board_row):
                 for j in range(self.board_col):
                     color = '#769656' if (i + j) % 2 == 0 else '#EEEED2'
+                    
+                    # Make the background div non-interactive
                     with ui.element('div').style(f'background-color: {color}; width: 100px; height: 100px;').on(
-                            'click', partial(self.handle_square_click, i, j)) as square:  # Zwiększenie rozmiaru kwadratów
+                            'click', partial(self.handle_square_click, i, j)) as square:
+                        
                         self.squares[i][j] = square
                         piece = self.board[i][j]
                         if piece:
@@ -45,9 +50,12 @@ class Chess:
                             piece_color = piece.color
                             image_path = f'./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png'
 
+                            # Make the chess pieces interactive
                             with square:
-                                ui.image(image_path)
+                                ui.image(image_path).style('pointer-events: all;')  # Allow clicks on the piece image
         self.update_captured_pieces()
+
+
 
     def handle_square_click(self, i, j):
         piece = self.board[i][j]
@@ -60,44 +68,64 @@ class Chess:
         else:
             start_row, start_col = self.start_pos
             piece = self.board[start_row][start_col]
-            if (i, j) in piece.available_moves(self.board):
+
+            # 🔥 Poprawne wywołanie available_moves 🔥
+            if (i, j) in piece.available_moves(self.board, self.last_move):
                 self.move_piece(start_row, start_col, i, j)
             else:
                 ui.notify('Nieprawidłowy ruch!', color='red')
             self.start_pos = None
 
+
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
 
-        # Check if trying to capture own piece
-        if target_piece and piece.color == target_piece.color:
-            ui.notify('Nie możesz zbić własnej figury!', color='red')
-            return
-        
-        # Capture the piece (avoid double addition of pawns)
-        if target_piece:
-            if target_piece.color == 'white' and target_piece not in self.white_captured:
+        # Sprawdzenie en passant
+        if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
+            # Pobierz pionka, który powinien zostać zbity en passant
+            captured_pawn = self.board[start_row][end_col]
+            if isinstance(captured_pawn, Pawn) and captured_pawn.color != piece.color:
+                self.board[start_row][end_col] = None  # Usunięcie zbitego pionka
+                if captured_pawn.color == 'white':
+                    self.white_captured.append(captured_pawn)
+                else:
+                    self.black_captured.append(captured_pawn)
+
+                # Update the square where the captured pawn was
+                self.update_square(start_row, end_col)  # Clears the square of the captured pawn
+
+        # Normalne bicie
+        elif target_piece:
+            if target_piece.color == 'white':
                 self.white_captured.append(target_piece)
-            elif target_piece.color == 'black' and target_piece not in self.black_captured:
+            else:
                 self.black_captured.append(target_piece)
-        
-        # Move the piece
+
+        # Wykonanie ruchu
         self.board[start_row][start_col] = None
         piece.move_piece(end_row, end_col)
         self.board[end_row][end_col] = piece
-        
-        # Update the chessboard
-        self.update_square(start_row, start_col)
-        self.update_square(end_row, end_col)
-        
-        # Change turn
+
+        # Update the board for both the start and end squares
+        self.update_square(start_row, start_col)  # Clears the start square
+        self.update_square(end_row, end_col)  # Updates the end square with the moved piece
+
+        # Zmiana tury
         self.turn = 'black' if self.turn == 'white' else 'white'
-        
+
         ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
-        
-        # Update captured pieces
+
+        # Aktualizacja zbitych figur
         self.update_captured_pieces()
+
+        # Update the last move
+        self.last_move = (piece, (start_row, start_col), (end_row, end_col))
+
+
+
+
+
 
     def update_square(self, row, col):
         square = self.squares[row][col]
@@ -144,15 +172,3 @@ class Chess:
                     piece_type = piece.__class__.__name__.lower()
                     image_path = f'./src/img/black-pieces/{piece_type}-black.png'
                     ui.image(image_path)
-
-
-
-
-
-
-
-
-
-
-
-
