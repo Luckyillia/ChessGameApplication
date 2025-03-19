@@ -76,14 +76,28 @@ class Chess:
                 ui.notify('Nieprawidłowy ruch!', color='red')
             self.start_pos = None
 
-
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
 
+        # Symulacja ruchu, aby sprawdzić, czy król nie będzie w szachu
+        original_piece = self.board[end_row][end_col]
+        self.board[end_row][end_col] = piece
+        self.board[start_row][start_col] = None
+
+        if self.isCheck():
+            # Cofnięcie symulacji, jeśli ruch powoduje szach
+            self.board[start_row][start_col] = piece
+            self.board[end_row][end_col] = original_piece
+            ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
+            return
+
+        # Przywrócenie planszy przed wykonaniem ruchu
+        self.board[start_row][start_col] = piece
+        self.board[end_row][end_col] = original_piece
+
         # Sprawdzenie en passant
         if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
-            # Pobierz pionka, który powinien zostać zbity en passant
             captured_pawn = self.board[start_row][end_col]
             if isinstance(captured_pawn, Pawn) and captured_pawn.color != piece.color:
                 self.board[start_row][end_col] = None  # Usunięcie zbitego pionka
@@ -91,9 +105,7 @@ class Chess:
                     self.white_captured.append(captured_pawn)
                 else:
                     self.black_captured.append(captured_pawn)
-
-                # Update the square where the captured pawn was
-                self.update_square(start_row, end_col)  # Clears the square of the captured pawn
+                self.update_square(start_row, end_col)  # Aktualizacja planszy
 
         # Normalne bicie
         elif target_piece:
@@ -110,24 +122,24 @@ class Chess:
             piece.move_piece(end_row, end_col)
         self.board[end_row][end_col] = piece
 
-        # Update the board for both the start and end squares
-        self.update_square(start_row, start_col)  # Clears the start square
-        self.update_square(end_row, end_col)  # Updates the end square with the moved piece
+        # Aktualizacja planszy
+        self.update_square(start_row, start_col)
+        self.update_square(end_row, end_col)
 
         # Zmiana tury
         self.turn = 'black' if self.turn == 'white' else 'white'
+
+        # Sprawdzenie szacha po ruchu
+        if self.isCheck():
+            ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
 
         ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
 
         # Aktualizacja zbitych figur
         self.update_captured_pieces()
 
-        # Update the last move
+        # Zapamiętanie ostatniego ruchu
         self.last_move = (piece, (start_row, start_col), (end_row, end_col))
-
-
-
-
 
 
     def update_square(self, row, col):
@@ -175,3 +187,26 @@ class Chess:
                     piece_type = piece.__class__.__name__.lower()
                     image_path = f'./src/img/black-pieces/{piece_type}-black.png'
                     ui.image(image_path)
+
+    def isCheck(self):
+        kingDict = {}
+        pieceDict = {'white': [], 'black': []}  # Upewnij się, że obie listy istnieją
+
+        for row in self.board:  # Przechodzimy przez każdy wiersz na planszy
+            for piece in row:  # Iterujemy po elementach wiersza (figury lub None)
+                if piece is not None:  # Upewniamy się, że piece nie jest None
+                    if isinstance(piece, King) and piece.color == self.turn:
+                        kingDict[piece.color] = (piece.x, piece.y)
+                    pieceDict[piece.color].append(piece)  # Dodajemy figurę do listy w odpowiednim kolorze
+
+        # Sprawdzanie czy któryś z królów jest szachowany
+        if 'white' in kingDict and self.canSeeKing(kingDict['white'], pieceDict['black']):
+            return True
+        if 'black' in kingDict and self.canSeeKing(kingDict['black'], pieceDict['white']):
+            return True
+        return False
+
+    def canSeeKing(self, kingpos, piecelist):
+        for piece in piecelist:
+            if (kingpos) in piece.available_moves(self.board, self.last_move):
+                return True
