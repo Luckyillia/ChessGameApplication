@@ -6,7 +6,7 @@ class Piece:
         self.x = x
         self.y = y
 
-    def available_moves(self, board):
+    def available_moves(self, board, last_move):
         raise NotImplementedError
 
     def move_piece(self, new_x, new_y):
@@ -15,20 +15,20 @@ class Piece:
 
 
 class King(Piece):
-    def available_moves(self, board):
+    def available_moves(self, board, last_move):
         return [(self.x + dx, self.y + dy) for dx in [-1, 0, 1] for dy in [-1, 0, 1] if (dx, dy) != (0, 0)]
 
 
 class Queen(Piece):
-    def available_moves(self, board):
+    def available_moves(self, board, last_move):
         moves = []
-        moves.extend(Rook(self.color, self.x, self.y).available_moves(board))
-        moves.extend(Bishop(self.color, self.x, self.y).available_moves(board))
+        moves.extend(Rook(self.color, self.x, self.y).available_moves(board, last_move))
+        moves.extend(Bishop(self.color, self.x, self.y).available_moves(board, last_move))
         return moves
 
 
 class Rook(Piece):
-    def available_moves(self, board):
+    def available_moves(self, board, last_move):
         moves = []
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
             x, y = self.x, self.y
@@ -46,7 +46,7 @@ class Rook(Piece):
 
 
 class Knight(Piece):
-    def available_moves(self, board):
+    def available_moves(self, board, last_move):
         moves = []
         for dx, dy in [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)]:
             x, y = self.x + dx, self.y + dy
@@ -58,7 +58,7 @@ class Knight(Piece):
 
 
 class Bishop(Piece):
-    def available_moves(self, board):
+    def available_moves(self, board, last_move):
         moves = []
         for dx, dy in [(1, 1), (1, -1), (-1, 1), (-1, -1)]:
             x, y = self.x, self.y
@@ -81,24 +81,30 @@ class Pawn(Piece):
         self.is_moved = False
         self.chess = chess
 
-    def available_moves(self, board):
+    def available_moves(self, board, last_move):
         moves = []
         direction = 1 if self.color == 'white' else -1
+        start_row = 1 if self.color == 'white' else 6
+        en_passant_row = 4 if self.color == 'white' else 3
 
-        # Single step forward
         if 0 <= self.x + direction < 8 and board[self.x + direction][self.y] is None:
             moves.append((self.x + direction, self.y))
 
-            # Double step forward (only if the pawn hasn't moved)
             if not self.is_moved and 0 <= self.x + 2 * direction < 8 and board[self.x + 2 * direction][self.y] is None:
                 moves.append((self.x + 2 * direction, self.y))
 
-        # Capturing diagonally
         for dy in [-1, 1]:
             if 0 <= self.y + dy < 8 and 0 <= self.x + direction < 8:
                 target = board[self.x + direction][self.y + dy]
                 if target and target.color != self.color:
                     moves.append((self.x + direction, self.y + dy))
+
+        # En passant
+        if self.x == en_passant_row and last_move:
+            last_piece, (old_x, old_y), (new_x, new_y) = last_move
+            if isinstance(last_piece, Pawn) and last_piece.color != self.color:
+                if abs(old_x - new_x) == 2 and new_x == self.x and abs(new_y - self.y) == 1:
+                    moves.append((self.x + direction, new_y))
 
         return moves
 

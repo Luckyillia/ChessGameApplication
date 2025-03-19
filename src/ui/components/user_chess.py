@@ -1,4 +1,3 @@
-# user_chess.py
 from nicegui import ui
 from functools import partial
 from src.ui.components.chess_pieces import King, Queen, Rook, Knight, Bishop, Pawn
@@ -13,7 +12,11 @@ class Chess:
         self.grid = None
         self.board = self.initialize_board()
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
+        self.white_captured = []
+        self.black_captured = []
+        self.last_move = None  # Dodaj śledzenie ostatniego ruchu
         self.create_chessboard()
+
 
     def initialize_board(self):
         return [
@@ -35,8 +38,11 @@ class Chess:
             for i in range(self.board_row):
                 for j in range(self.board_col):
                     color = '#769656' if (i + j) % 2 == 0 else '#EEEED2'
-                    with ui.element('div').style(f'background-color: {color}; width: 96px; height: 96px;').on(
+                    
+                    # Make the background div non-interactive
+                    with ui.element('div').style(f'background-color: {color}; width: 100px; height: 100px;').on(
                             'click', partial(self.handle_square_click, i, j)) as square:
+                        
                         self.squares[i][j] = square
                         piece = self.board[i][j]
                         if piece:
@@ -44,8 +50,12 @@ class Chess:
                             piece_color = piece.color
                             image_path = f'./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png'
 
+                            # Make the chess pieces interactive
                             with square:
-                                ui.image(image_path)
+                                ui.image(image_path).style('pointer-events: all;')  # Allow clicks on the piece image
+        self.update_captured_pieces()
+
+
 
     def handle_square_click(self, i, j):
         piece = self.board[i][j]
@@ -58,28 +68,67 @@ class Chess:
         else:
             start_row, start_col = self.start_pos
             piece = self.board[start_row][start_col]
-            if (i, j) in piece.available_moves(self.board):
+
+            # 🔥 Poprawne wywołanie available_moves 🔥
+            if (i, j) in piece.available_moves(self.board, self.last_move):
                 self.move_piece(start_row, start_col, i, j)
             else:
                 ui.notify('Nieprawidłowy ruch!', color='red')
             self.start_pos = None
 
+
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
-        if target_piece and piece.color == target_piece.color:
-            ui.notify('Nie możesz zbić własnej figury!', color='red')
-            return
+
+        # Sprawdzenie en passant
+        if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
+            # Pobierz pionka, który powinien zostać zbity en passant
+            captured_pawn = self.board[start_row][end_col]
+            if isinstance(captured_pawn, Pawn) and captured_pawn.color != piece.color:
+                self.board[start_row][end_col] = None  # Usunięcie zbitego pionka
+                if captured_pawn.color == 'white':
+                    self.white_captured.append(captured_pawn)
+                else:
+                    self.black_captured.append(captured_pawn)
+
+                # Update the square where the captured pawn was
+                self.update_square(start_row, end_col)  # Clears the square of the captured pawn
+
+        # Normalne bicie
+        elif target_piece:
+            if target_piece.color == 'white':
+                self.white_captured.append(target_piece)
+            else:
+                self.black_captured.append(target_piece)
+
+        # Wykonanie ruchu
         self.board[start_row][start_col] = None
         if isinstance(piece, Pawn):
             piece.move_piece(end_row, end_col, self.board)
         else:
             piece.move_piece(end_row, end_col)
         self.board[end_row][end_col] = piece
-        self.update_square(start_row, start_col)
-        self.update_square(end_row, end_col)
+
+        # Update the board for both the start and end squares
+        self.update_square(start_row, start_col)  # Clears the start square
+        self.update_square(end_row, end_col)  # Updates the end square with the moved piece
+
+        # Zmiana tury
         self.turn = 'black' if self.turn == 'white' else 'white'
+
         ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
+
+        # Aktualizacja zbitych figur
+        self.update_captured_pieces()
+
+        # Update the last move
+        self.last_move = (piece, (start_row, start_col), (end_row, end_col))
+
+
+
+
+
 
     def update_square(self, row, col):
         square = self.squares[row][col]
@@ -93,3 +142,36 @@ class Chess:
 
             with square:
                 ui.image(image_path)
+
+    def update_captured_pieces(self):
+        global captured_white_grid, captured_black_grid
+
+        # Create grids if not already initialized
+        if 'captured_white_grid' not in globals():
+            captured_white_grid = ui.grid(columns=4).classes('w-auto m-auto gap-0').style(
+                'position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: grid; grid-template-columns: repeat(4, 1fr); direction: rtl;'
+            )
+        if 'captured_black_grid' not in globals():
+            captured_black_grid = ui.grid(columns=4).classes('w-auto m-auto gap-0').style(
+                'position: absolute; top: 50%; left: 0; transform: translateY(-50%);'
+            )
+
+        # Clear previous captured pieces display
+        captured_white_grid.clear()
+        captured_black_grid.clear()
+
+        # Display captured white pieces (from right to left, new row after 4 items)
+        with captured_white_grid:
+            for piece in reversed(self.white_captured):  # Odwracamy listę, aby wypełniało się od prawej
+                with ui.element('div').style('width: 80px; height: 80px;').classes('m-auto'):
+                    piece_type = piece.__class__.__name__.lower()
+                    image_path = f'./src/img/white-pieces/{piece_type}-white.png'
+                    ui.image(image_path)
+
+        # Display captured black pieces (zwykły układ od lewej do prawej)
+        with captured_black_grid:
+            for piece in self.black_captured:
+                with ui.element('div').style('width: 80px; height: 80px;').classes('m-auto'):
+                    piece_type = piece.__class__.__name__.lower()
+                    image_path = f'./src/img/black-pieces/{piece_type}-black.png'
+                    ui.image(image_path)
