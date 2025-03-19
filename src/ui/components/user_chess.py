@@ -72,8 +72,7 @@ class Chess:
             return
         self.board[start_row][start_col] = None
         if isinstance(piece, Pawn):
-            if piece.move_piece(end_row, end_col, self.board):
-                self.update_square(end_row, end_col)
+            piece.move_piece(end_row, end_col, self.board)
         else:
             piece.move_piece(end_row, end_col)
         self.board[end_row][end_col] = piece
