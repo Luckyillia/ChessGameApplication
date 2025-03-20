@@ -16,7 +16,18 @@ class Piece:
 
 class King(Piece):
     def available_moves(self, board, last_move):
-        return [(self.x + dx, self.y + dy) for dx in [-1, 0, 1] for dy in [-1, 0, 1] if (dx, dy) != (0, 0)]
+        moves = []
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx == 0 and dy == 0:
+                    continue  # Pomijamy aktualną pozycję
+                new_x = self.x + dx
+                new_y = self.y + dy
+                if 0 <= new_x < 8 and 0 <= new_y < 8:
+                    target = board[new_x][new_y]
+                    if target is None or target.color != self.color:  # 🔥 Tylko puste lub wrogie!
+                        moves.append((new_x, new_y))
+        return moves
 
 
 class Queen(Piece):
