@@ -1,36 +1,22 @@
 from nicegui import ui
 from functools import partial
-from src.ui.components.chess_pieces import King, Queen, Rook, Knight, Bishop, Pawn
-
+from src.ui.components.chess_board import ChessBoard
+from src.ui.components.chess_pieces import King, Rook, Pawn
 
 class Chess:
     def __init__(self):
         self.board_row = 8
         self.board_col = 8
+        self.board_class = ChessBoard(self)
         self.start_pos = None
         self.turn = 'white'
         self.grid = None
-        self.board = self.initialize_board()
+        self.board = self.board_class.init_board()
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
         self.white_captured = []
         self.black_captured = []
         self.last_move = None  # Dodaj śledzenie ostatniego ruchu
         self.create_chessboard()
-
-
-    def initialize_board(self):
-        return [
-            [Rook('white', 0, 0), Knight('white', 0, 1), Bishop('white', 0, 2), Queen('white', 0, 3),
-             King('white', 0, 4), Bishop('white', 0, 5), Knight('white', 0, 6), Rook('white', 0, 7)],
-            [Pawn('white', 1, i, self) for i in range(8)],
-            [None] * 8,
-            [None] * 8,
-            [None] * 8,
-            [None] * 8,
-            [Pawn('black', 6, i, self) for i in range(8)],
-            [Rook('black', 7, 0), Knight('black', 7, 1), Bishop('black', 7, 2), Queen('black', 7, 3),
-             King('black', 7, 4), Bishop('black', 7, 5), Knight('black', 7, 6), Rook('black', 7, 7)]
-        ]
 
     def create_chessboard(self):
         self.grid = ui.grid(columns=8).classes('w-auto m-auto gap-0')
@@ -148,8 +134,11 @@ class Chess:
         self.turn = 'black' if self.turn == 'white' else 'white'
 
         # Sprawdzenie szacha po ruchu
-        if self.isCheck(self.turn):  # Sprawdzamy szach dla przeciwnika
-            ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
+        if self.isCheck(self.turn):
+            if self.isCheckMate(self.turn):
+                ui.notify(f'Checkmate! {'black' if self.turn == 'white' else 'white'} wins!', color='green', type='positive')
+            else:
+                ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
 
         ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
 
@@ -380,7 +369,7 @@ class Chess:
         # Symulacja ruchu (aktualizacja pozycji na planszy i współrzędnych figury)
         self.board[end_row][end_col] = piece
         self.board[start_row][start_col] = None
-        piece.x, piece.y = end_row, end_col  # 🔥 Aktualizacja współrzędnych!
+        piece.x, piece.y = end_row, end_col  # Aktualizacja współrzędnych!
 
         # Sprawdzenie, czy król jest w szachu po ruchu
         is_safe = not self.isCheck(piece.color)
@@ -388,6 +377,31 @@ class Chess:
         # Cofnięcie symulacji (przywrócenie planszy i współrzędnych)
         self.board[start_row][start_col] = piece
         self.board[end_row][end_col] = target_piece
-        piece.x, piece.y = original_x, original_y  # 🔥 Przywrócenie oryginalnych współrzędnych!
+        piece.x, piece.y = original_x, original_y
 
         return is_safe
+
+    def isCheckMate(self, color):
+        """
+        Sprawdza, czy król danego koloru jest zamatowany.
+        :param color: Kolor króla ('white' lub 'black')
+        :return: True, jeśli mat, False w przeciwnym razie
+        """
+        # Sprawdź, czy król jest w szachu
+        print(f'color: {color}')
+        if not self.isCheck(color):
+            return False
+
+        # Iteruj przez wszystkie figury gracza
+        for row in range(self.board_row):
+            for col in range(self.board_col):
+                piece = self.board[row][col]
+                if piece and piece.color == color:
+                    # Pobierz wszystkie dostępne ruchy dla figury
+                    moves = piece.available_moves(self.board, self.last_move)
+                    for (new_row, new_col) in moves:
+                        # Symuluj ruch i sprawdź, czy król jest bezpieczny
+                        if self.is_move_safe(row, col, new_row, new_col):
+                            return False  # Znaleziono ruch, który usuwa szacha
+
+        return True  # Brak możliwych ruchów — mat
