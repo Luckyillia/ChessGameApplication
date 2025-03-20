@@ -99,7 +99,16 @@ class ChessBoard:
         ]
 
     def init_stalemate(self):
-        pass
+        return [
+            [King('black', 0, 0), None, None, None, None, None, None, None],
+            [None, None, None, None, Queen('white', 1, 4), None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, King('white', 6, 6), None],
+            [None, None, None, None, None, None, None, None],
+        ]
 
     def empty_board(self):
         return [
