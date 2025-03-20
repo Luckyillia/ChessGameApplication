@@ -2,4 +2,4 @@
 
 from .user_table import UserTable
 
-__all__ = ['UserTable']  # Definiuje, co będzie dostępne przy imporcie z pakietu components.
+__all__ = ['UserTable']

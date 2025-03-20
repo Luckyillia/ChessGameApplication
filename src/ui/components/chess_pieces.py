@@ -17,19 +17,19 @@ class Piece:
 class King(Piece):
     def __init__(self, color, x, y):
         super().__init__(color, x, y)
-        self.has_moved = False  # Add this line to track if the king has moved
+        self.has_moved = False  # Track if the king has moved
 
     def available_moves(self, board, last_move):
         moves = []
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
                 if dx == 0 and dy == 0:
-                    continue  # Pomijamy aktualną pozycję
+                    continue  # Skip current position
                 new_x = self.x + dx
                 new_y = self.y + dy
                 if 0 <= new_x < 8 and 0 <= new_y < 8:
                     target = board[new_x][new_y]
-                    if target is None or target.color != self.color:  # 🔥 Tylko puste lub wrogie!
+                    if target is None or target.color != self.color:  # Only empty or enemy pieces
                         moves.append((new_x, new_y))
         return moves
 
@@ -41,17 +41,16 @@ class Queen(Piece):
         moves.extend(Bishop(self.color, self.x, self.y).available_moves(board, last_move))
         return moves
 
+
 class Rook(Piece):
     def __init__(self, color, x, y):
         super().__init__(color, x, y)
-        self.has_moved = False  # Prawidłowa flaga
+        self.has_moved = False  # Flag to track if the rook has moved
 
     def move_piece(self, new_x, new_y):
-        # Jeśli wieża się ruszyła, zaznaczamy to
         if not self.has_moved:
-            self.has_moved = True
+            self.has_moved = True  # Mark as moved
         self.x, self.y = new_x, new_y
-
 
     def available_moves(self, board, last_move):
         moves = []
@@ -68,6 +67,7 @@ class Rook(Piece):
                 else:
                     break
         return moves
+
 
 class Knight(Piece):
     def available_moves(self, board, last_move):
@@ -123,7 +123,7 @@ class Pawn(Piece):
                 if target and target.color != self.color:
                     moves.append((self.x + direction, self.y + dy))
 
-        # En passant
+        # En passant logic
         if self.x == en_passant_row and last_move:
             last_piece, (old_x, old_y), (new_x, new_y) = last_move
             if isinstance(last_piece, Pawn) and last_piece.color != self.color:
@@ -133,7 +133,7 @@ class Pawn(Piece):
         return moves
 
     def move_piece(self, new_x, new_y, board):
-        """Moves the pawn and handles promotion."""
+        """Moves the pawn and handles promotion if applicable."""
         self.x = new_x
         self.y = new_y
         self.is_moved = True
@@ -142,7 +142,7 @@ class Pawn(Piece):
                 return True
 
     def promote_pawn(self, board):
-        """Handles pawn promotion to a chosen piece."""
+        """Handles pawn promotion to a selected piece."""
         def select_promotion(piece_name):
             piece_classes = {'Queen': Queen, 'Rook': Rook, 'Bishop': Bishop, 'Knight': Knight}
             board[self.x][self.y] = piece_classes[piece_name](self.color, self.x, self.y)
