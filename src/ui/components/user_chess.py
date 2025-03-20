@@ -182,6 +182,8 @@ class Chess:
 
             with square:
                 ui.image(image_path).style('pointer-events: none;')
+                if isinstance(piece, King):
+                    self.add_king_context_menu(square, piece)
 
     def update_captured_pieces(self):
         if not hasattr(self, 'captured_white_grid'):
