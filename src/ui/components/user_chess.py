@@ -32,7 +32,6 @@ class Chess:
              King('black', 7, 4), Bishop('black', 7, 5), Knight('black', 7, 6), Rook('black', 7, 7)]
         ]
 
-
     def create_chessboard(self):
         self.grid = ui.grid(columns=8).classes('w-auto m-auto gap-0')
         with self.grid:
@@ -83,21 +82,38 @@ class Chess:
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
 
+        # Sprawdź, czy ruch jest dozwolony
+        if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
+            ui.notify('Nieprawidłowy ruch!', color='red')
+            return
+
+        # Jeśli ruch dotyczy króla, sprawdź, czy ruch jest bezpieczny
+        if isinstance(piece, King):
+            if not self.is_move_safe(start_row, start_col, end_row, end_col):
+                ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
+                return
+
         # Symulacja ruchu, aby sprawdzić, czy król nie będzie w szachu
         original_piece = self.board[end_row][end_col]
+        original_x, original_y = piece.x, piece.y  # 🔥 Zapisanie oryginalnych współrzędnych
+
+        # Aktualizacja współrzędnych figury podczas symulacji
+        piece.x, piece.y = end_row, end_col  # 🔥 Aktualizacja!
         self.board[end_row][end_col] = piece
         self.board[start_row][start_col] = None
 
-        if self.isCheck():
-            # Cofnięcie symulacji, jeśli ruch powoduje szach
+        if self.isCheck(piece.color):
+            # Cofnięcie symulacji
             self.board[start_row][start_col] = piece
             self.board[end_row][end_col] = original_piece
+            piece.x, piece.y = original_x, original_y  # 🔥 Przywrócenie współrzędnych
             ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
             return
 
-        # Przywrócenie planszy przed wykonaniem ruchu
+        # Przywrócenie planszy i współrzędnych przed wykonaniem ruchu
         self.board[start_row][start_col] = piece
         self.board[end_row][end_col] = original_piece
+        piece.x, piece.y = original_x, original_y  # 🔥 Przywrócenie współrzędnych
 
         # Sprawdzenie en passant
         if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
@@ -133,7 +149,7 @@ class Chess:
         self.turn = 'black' if self.turn == 'white' else 'white'
 
         # Sprawdzenie szacha po ruchu
-        if self.isCheck():
+        if self.isCheck(self.turn):  # Sprawdzamy szach dla przeciwnika
             ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
 
         ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
@@ -152,7 +168,7 @@ class Chess:
         if self.isCheck():
             ui.notify(f'{self.turn} król w szachu!', color='red')
 
-    def add_king_context_menu(self, square, piece): 
+    def add_king_context_menu(self, square, piece):
         with square:
             with ui.context_menu():
                 ui.menu_item('Roszada długa', on_click=partial(self.handle_castling, piece, 'long'))
@@ -215,7 +231,7 @@ class Chess:
     def is_check_on_castling_path(self, piece, row, start_col, end_col):
         # Check if any squares the King would pass over (during castling) are attacked
         squares_to_check = []
-        
+
         if start_col < end_col:  # Short castling (moving right)
             squares_to_check = [(row, start_col), (row, start_col + 1), (row, start_col + 2)]
         else:  # Long castling (moving left)
@@ -250,7 +266,7 @@ class Chess:
     def is_square_under_attack(self, row, col, board=None):
         # Check if a given square is under attack by any opponent piece
         opponent_color = 'black' if self.turn == 'white' else 'white'
-        
+
         # If no board is passed, use the current board state
         if board is None:
             board = self.board
@@ -260,7 +276,7 @@ class Chess:
                 if piece and piece.color == opponent_color:
                     if (row, col) in piece.available_moves(board, self.last_move):
                         return True
-        return False                    
+        return False
 
 
     def update_square(self, row, col):
@@ -274,7 +290,7 @@ class Chess:
             image_path = f'./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png'
 
             with square:
-                ui.image(image_path).style('pointer-events: none;')
+                ui.image(image_path)
 
     def update_captured_pieces(self):
         # Sprawdzenie czy siatki już istnieją, jeśli nie, utworzenie nowych
@@ -307,26 +323,76 @@ class Chess:
                     image_path = f'./src/img/black-pieces/{piece_type}-black.png'
                     ui.image(image_path)
 
+    def isCheck(self, color):
+        """
+        Sprawdza, czy król danego koloru jest w szachu.
+        :param color: Kolor króla ('white' lub 'black')
+        :return: True, jeśli król jest w szachu, False w przeciwnym razie
+        """
+        king_pos = None
+        for row in self.board:
+            for piece in row:
+                if isinstance(piece, King) and piece.color == color:
+                    king_pos = (piece.x, piece.y)
+                    break
+            if king_pos:
+                break
 
-    def isCheck(self):
-        kingDict = {}
-        pieceDict = {'white': [], 'black': []}  # Upewnij się, że obie listy istnieją
+        if not king_pos:
+            return False
 
-        for row in self.board:  # Przechodzimy przez każdy wiersz na planszy
-            for piece in row:  # Iterujemy po elementach wiersza (figury lub None)
-                if piece is not None:  # Upewniamy się, że piece nie jest None
-                    if isinstance(piece, King) and piece.color == self.turn:
-                        kingDict[piece.color] = (piece.x, piece.y)
-                    pieceDict[piece.color].append(piece)  # Dodajemy figurę do listy w odpowiednim kolorze
+        # Sprawdzamy, czy jakakolwiek figura przeciwnika może zaatakować króla
+        opponent_color = 'black' if color == 'white' else 'white'
+        for row in self.board:
+            for piece in row:
+                if piece and piece.color == opponent_color:
+                    if self.canSeeKing(king_pos, piece):
+                        return True
 
-        # Sprawdzanie czy któryś z królów jest szachowany
-        if 'white' in kingDict and self.canSeeKing(kingDict['white'], pieceDict['black']):
-            return True
-        if 'black' in kingDict and self.canSeeKing(kingDict['black'], pieceDict['white']):
-            return True
         return False
 
-    def canSeeKing(self, kingpos, piecelist):
-        for piece in piecelist:
-            if (kingpos) in piece.available_moves(self.board, self.last_move):
+    def canSeeKing(self, king_pos, piece):
+        """
+        Sprawdza, czy dana figura może zaatakować króla.
+        :param king_pos: Pozycja króla (x, y)
+        :param piece: Figura, która może atakować króla
+        :return: True, jeśli figura może zaatakować króla, False w przeciwnym razie
+        """
+        if not piece:
+            return False
+
+        # Sprawdzamy, czy król znajduje się na liście dostępnych ruchów figury
+        if king_pos in piece.available_moves(self.board, self.last_move):
+            return True
+
+        # Dodatkowe sprawdzenie dla pionków (specjalne zasady bicia)
+        if isinstance(piece, Pawn):
+            direction = 1 if piece.color == 'white' else -1
+            x, y = piece.x, piece.y
+            # Sprawdzamy, czy król znajduje się na polu bicia pionka
+            if (king_pos == (x + direction, y - 1)) or (king_pos == (x + direction, y + 1)):
                 return True
+
+        return False
+
+    def is_move_safe(self, start_row, start_col, end_row, end_col):
+        piece = self.board[start_row][start_col]
+        target_piece = self.board[end_row][end_col]
+
+        # Zapisanie oryginalnych współrzędnych
+        original_x, original_y = piece.x, piece.y
+
+        # Symulacja ruchu (aktualizacja pozycji na planszy i współrzędnych figury)
+        self.board[end_row][end_col] = piece
+        self.board[start_row][start_col] = None
+        piece.x, piece.y = end_row, end_col  # 🔥 Aktualizacja współrzędnych!
+
+        # Sprawdzenie, czy król jest w szachu po ruchu
+        is_safe = not self.isCheck(piece.color)
+
+        # Cofnięcie symulacji (przywrócenie planszy i współrzędnych)
+        self.board[start_row][start_col] = piece
+        self.board[end_row][end_col] = target_piece
+        piece.x, piece.y = original_x, original_y  # 🔥 Przywrócenie oryginalnych współrzędnych!
+
+        return is_safe
