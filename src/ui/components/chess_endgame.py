@@ -1,5 +1,5 @@
 from src.ui.components.chess_pieces import *
-from src.ui.components.chess_board import ChessBoard
+from src.ui.components.chess_board import * 
 
 
 class ChessEndgame:
@@ -89,7 +89,6 @@ class ChessEndgame:
 
         return is_safe
 
-
     def isCheckMate(self, color):
         """
         Sprawdza, czy król danego koloru jest zamatowany.
@@ -114,7 +113,31 @@ class ChessEndgame:
 
         return True  # Brak możliwych ruchów — mat
 
-    def end(self, color):
+    def isStalemate(self, color):
+        """
+        Sprawdza, czy wystąpił pat.
+        :param color: Kolor gracza, który ma wykonać ruch ('white' lub 'black')
+        :return: True, jeśli pat, False w przeciwnym razie
+        """
+        # Sprawdź, czy król nie jest w szachu
+        if self.isCheck(color):
+            return False
+
+        # Iteruj przez wszystkie figury gracza
+        for row in range(self.chess.board_row):
+            for col in range(self.chess.board_col):
+                piece = self.chess.board[row][col]
+                if piece and piece.color == color:
+                    # Pobierz wszystkie dostępne ruchy dla figury
+                    moves = piece.available_moves(self.chess.board, self.chess.last_move)
+                    for (new_row, new_col) in moves:
+                        # Symuluj ruch i sprawdź, czy król jest bezpieczny
+                        if self.is_move_safe(row, col, new_row, new_col):
+                            return False  # Znaleziono legalny ruch
+
+        return True  # Brak możliwych ruchów — pat
+
+    def end(self, color=None):
         def restart_game():
             self.chess.board = self.chess_board.init_board()
             self.chess.turn = 'white'
@@ -126,7 +149,11 @@ class ChessEndgame:
             dialog.close()
 
         with ui.dialog() as dialog, ui.card().classes('p-4'):
-            ui.label(f'{color.capitalize()} Won').classes('text-xl font-bold text-center w-full')
+            if color:
+                ui.label(f'{color.capitalize()} Won').classes('text-xl font-bold text-center w-full')
+            else:
+                ui.label('Draw').classes('text-xl font-bold text-center w-full')
+            
             with ui.row().classes('justify-center w-full'):
                 ui.button('Restartuj Grę', on_click=restart_game).classes(
                     'bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500'

@@ -16,7 +16,7 @@ class Chess:
         self.start_pos = None
         self.turn = 'white'
         self.grid = None
-        self.board = self.board_class.init_checkmate_1()
+        self.board = self.board_class.init_stalemate()
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
         self.white_captured = []
         self.black_captured = []
@@ -145,7 +145,13 @@ class Chess:
                 self.end_game_class.end('black' if self.turn == 'white' else 'white')
             else:
                 ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
+        else:
+            # Sprawdzenie, czy doszło do pata (stalemate)
+            if self.end_game_class.isStalemate(self.turn):
+                self.end_game_class.end()  # Zakładamy, że metoda `end` obsługuje remis
+                
 
+        # Powiadomienie o przeniesieniu figury
         ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
 
         # Update captured pieces
