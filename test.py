@@ -248,3 +248,60 @@ uniDict = {WHITE: {Pawn: "♙", Rook: "♖", Knight: "♘", Bishop: "♗", King:
            BLACK: {Pawn: "♟", Rook: "♜", Knight: "♞", Bishop: "♝", King: "♚", Queen: "♛"}}
 
 Game()
+
+
+def initialize_board(self):
+    return [
+        [Rook('white', 0, 0), Knight('white', 0, 1), Bishop('white', 0, 2), None,
+         King('white', 0, 4), None, Knight('white', 0, 6), Rook('white', 0, 7)],
+        [Pawn('white', 1, 0, self), Pawn('white', 1, 1, self), Pawn('white', 1, 2, self), Pawn('white', 1, 3, self),
+         Pawn('white', 1, 4, self), Pawn('white', 1, 5, self), Pawn('white', 1, 6, self),
+         Pawn('white', 1, 7, self)],
+        [None, None, None, None, None, Queen('white', 2, 5), None, None],
+        [None, None, Bishop('white', 3, 2), None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [Pawn('black', 6, 0, self), Pawn('black', 6, 1, self), Pawn('black', 6, 2, self), Pawn('black', 6, 3, self),
+         Pawn('black', 6, 4, self), Pawn('black', 6, 5, self), Pawn('black', 6, 6, self),
+         Pawn('black', 6, 7, self)],
+        [Rook('black', 7, 0), Knight('black', 7, 1), Bishop('black', 7, 2), Queen('black', 7, 3),
+         King('black', 7, 4), Bishop('black', 7, 5), Knight('black', 7, 6), Rook('black', 7, 7)]
+    ]
+
+
+def initialize_board(self):
+    return [
+        [Rook('white', 0, 0), Knight('white', 0, 1), Bishop('white', 0, 2), Queen('white', 0, 3),
+         King('white', 0, 4), Bishop('white', 0, 5), Knight('white', 0, 6), Rook('white', 0, 7)],
+        [Pawn('white', 1, i, self) for i in range(8)],
+        [None] * 8,
+        [None] * 8,
+        [None] * 8,
+        [None] * 8,
+        [Pawn('black', 6, i, self) for i in range(8)],
+        [Rook('black', 7, 0), Knight('black', 7, 1), Bishop('black', 7, 2), Queen('black', 7, 3),
+         King('black', 7, 4), Bishop('black', 7, 5), Knight('black', 7, 6), Rook('black', 7, 7)]
+    ]
+
+def initialize_board(self):
+    return [
+    [Rook('white', 0, 0), None, None, None, King('white', 0, 4), None, None, Rook('white', 0, 7)],
+    [Pawn('white', 1, i) for i in range(8)],
+    [None] * 8,
+    [None] * 8,
+    [None] * 8,
+    [None] * 8,
+    [Pawn('black', 6, i) for i in range(8)],
+    [Rook('black', 7, 0), None, None, None, King('black', 7, 4), None, None, Rook('black', 7, 7)]
+]
+
+    return [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+    ]
