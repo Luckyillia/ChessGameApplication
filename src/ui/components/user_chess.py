@@ -1,7 +1,9 @@
 from nicegui import ui
 from functools import partial
 from src.ui.components.chess_board import ChessBoard
-from src.ui.components.chess_pieces import King, Rook, Pawn
+from src.ui.components.chess_castling import ChessCastling
+from src.ui.components.chess_endgame import ChessEndgame
+from src.ui.components.chess_pieces import King, Pawn
 
 class Chess:
     def __init__(self):
@@ -9,10 +11,12 @@ class Chess:
         self.board_row = 8
         self.board_col = 8
         self.board_class = ChessBoard(self)
+        self.end_game_class = ChessEndgame(self)
+        self.handling_castling = ChessCastling(self)
         self.start_pos = None
         self.turn = 'white'
         self.grid = None
-        self.board = self.board_class.init_board()
+        self.board = self.board_class.init_castling_long()
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
         self.white_captured = []
         self.black_captured = []
@@ -76,7 +80,7 @@ class Chess:
 
         # If the piece is a King, ensure the move is safe
         if isinstance(piece, King):
-            if not self.is_move_safe(start_row, start_col, end_row, end_col):
+            if not self.end_game_class.is_move_safe(start_row, start_col, end_row, end_col):
                 ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
                 return
 
@@ -89,7 +93,7 @@ class Chess:
         self.board[end_row][end_col] = piece
         self.board[start_row][start_col] = None
 
-        if self.isCheck(piece.color):
+        if self.end_game_class.isCheck(piece.color):
             # Cofnięcie symulacji
             self.board[start_row][start_col] = piece
             self.board[end_row][end_col] = original_piece
@@ -136,8 +140,8 @@ class Chess:
         self.turn = 'black' if self.turn == 'white' else 'white'
 
         # Sprawdzenie szacha po ruchu
-        if self.isCheck(self.turn):
-            if self.isCheckMate(self.turn):
+        if self.end_game_class.isCheck(self.turn):
+            if self.end_game_class.isCheckMate(self.turn):
                 ui.notify(f'Checkmate! {'black' if self.turn == 'white' else 'white'} wins!', color='green', type='positive')
             else:
                 ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
@@ -156,111 +160,8 @@ class Chess:
     def add_king_context_menu(self, square, piece):
         with square:
             with ui.context_menu():
-                ui.menu_item('Roszada długa', on_click=partial(self.handle_castling, piece, 'long'))
-                ui.menu_item('Roszada krótka', on_click=partial(self.handle_castling, piece, 'short'))
-
-    def handle_castling(self, piece, castling_type):
-        if piece.color != self.turn:
-            ui.notify('Ruch przeciwnika!', color='red')
-            return
-
-        start_row, start_col = piece.x, piece.y
-
-        if piece.has_moved:
-            ui.notify('Król już się ruszył, roszada niemożliwa!', color='red')
-            return
-
-        if castling_type == 'long':
-            rook_col, end_col, rook_target_col = 0, 2, 3
-        else:
-            rook_col, end_col, rook_target_col = 7, 6, 5
-
-        rook = self.board[start_row][rook_col]
-
-        if not isinstance(rook, Rook) or rook.has_moved:
-            ui.notify('Wieża już się ruszyła, roszada niemożliwa!', color='red')
-            return
-
-        if any(self.board[start_row][i] is not None for i in range(min(start_col, rook_col) + 1, max(start_col, rook_col))):
-            ui.notify('Między królem a wieżą są figury, roszada niemożliwa!', color='red')
-            return
-
-        if self.is_check_on_castling_path(piece, start_row, start_col, end_col):
-            ui.notify('Król jest w szachu lub przechodzi przez pole szachu, roszada niemożliwa!', color='red')
-            return
-
-        # Castling
-        self.board[start_row][end_col] = piece
-        self.board[start_row][start_col] = None
-        self.board[start_row][rook_target_col] = rook
-        self.board[start_row][rook_col] = None
-
-        # Update position
-        piece.x, piece.y = start_row, end_col
-        rook.x, rook.y = start_row, rook_target_col
-
-
-        piece.has_moved = True
-        rook.has_moved = True
-
-        # Update board
-        self.update_square(start_row, start_col)
-        self.update_square(start_row, end_col)
-        self.update_square(start_row, rook_col)
-        self.update_square(start_row, rook_target_col)
-
-        self.turn = 'black' if self.turn == 'white' else 'white'
-
-
-    def is_check_on_castling_path(self, piece, row, start_col, end_col):
-        # Check if any squares the King would pass over (during castling) are attacked
-        squares_to_check = []
-
-        if start_col < end_col:
-            squares_to_check = [(row, start_col), (row, start_col + 1), (row, start_col + 2)]
-        else:
-            squares_to_check = [(row, start_col), (row, start_col - 1), (row, start_col - 2), (row, start_col - 3)]
-
-        # Simulate castling move to test if it puts the King in check
-        temp_board = [r.copy() for r in self.board]
-        temp_piece = temp_board[row][start_col]
-
-        # Move the King
-        temp_board[row][end_col] = temp_piece
-        temp_board[row][start_col] = None
-
-        # Move the Rook if short or long castling
-        rook_col = 0 if start_col > end_col else 7
-        rook_target_col = 3 if start_col > end_col else 5
-        rook = temp_board[row][rook_col]
-        temp_board[row][rook_target_col] = rook
-        temp_board[row][rook_col] = None
-
-        # Now check if any of the squares on the castling path or the King's new position are under attack
-        for square in squares_to_check:
-            if self.is_square_under_attack(square[0], square[1], temp_board):
-                return True
-
-        # Check the King's final position after castling
-        if self.is_square_under_attack(row, end_col, temp_board):
-            return True
-
-        return False
-
-    def is_square_under_attack(self, row, col, board=None):
-        # Check if a given square is under attack by any opponent piece
-        opponent_color = 'black' if self.turn == 'white' else 'white'
-
-        # If no board is passed, use the current board state
-        if board is None:
-            board = self.board
-
-        for r in board:
-            for piece in r:
-                if piece and piece.color == opponent_color:
-                    if (row, col) in piece.available_moves(board, self.last_move):
-                        return True
-        return False
+                ui.menu_item('Roszada długa', on_click=partial(self.handling_castling.handle_castling, piece, 'long'))
+                ui.menu_item('Roszada krótka', on_click=partial(self.handling_castling.handle_castling, piece, 'short'))
 
 
     def update_square(self, row, col):
@@ -302,111 +203,3 @@ class Chess:
                     piece_type = piece.__class__.__name__.lower()
                     image_path = f'./src/img/black-pieces/{piece_type}-black.png'
                     ui.image(image_path)
-
-    def isCheck(self, color):
-        """
-        Sprawdza, czy król danego koloru jest w szachu.
-        :param color: Kolor króla ('white' lub 'black')
-        :return: True, jeśli król jest w szachu, False w przeciwnym razie
-        """
-        king_pos = None
-        for row in self.board:
-            for piece in row:
-                if isinstance(piece, King) and piece.color == color:
-                    king_pos = (piece.x, piece.y)
-                    break
-            if king_pos:
-                break
-
-        if not king_pos:
-            return False
-
-        opponent_color = 'black' if color == 'white' else 'white'
-        for row in self.board:
-            for piece in row:
-                if piece and piece.color == opponent_color:
-                    if self.canSeeKing(king_pos, piece):
-                        return True
-
-        return False
-
-    def canSeeKing(self, king_pos, piece):
-        """
-        Checks if a given piece can attack the king.
-        :param king_pos: Position of the king (x, y)
-        :param piece: The piece that may attack the king
-        :return: True if the piece can attack the king, False otherwise
-        """
-        if not piece:
-            return False
-
-        # Check if the king's position is within the available moves of the piece
-        if king_pos in piece.available_moves(self.board, self.last_move):
-            return True
-
-        # Additional check for pawns (special capture rules)
-        if isinstance(piece, Pawn):
-            direction = 1 if piece.color == 'white' else -1
-            x, y = piece.x, piece.y
-            # Check if the king is within the pawn's capture range
-            if (king_pos == (x + direction, y - 1)) or (king_pos == (x + direction, y + 1)):
-                return True
-
-        return False
-
-    def is_move_safe(self, start_row, start_col, end_row, end_col):
-        """
-        Simulates a move to check if it leaves the king in check.
-        :param start_row: Starting row of the piece
-        :param start_col: Starting column of the piece
-        :param end_row: Ending row after the move
-        :param end_col: Ending column after the move
-        :return: True if the move is safe (king is not in check), False otherwise
-        """
-        piece = self.board[start_row][start_col]
-        target_piece = self.board[end_row][end_col]
-
-        # Save the original coordinates of the piece
-        original_x, original_y = piece.x, piece.y
-
-        # Simulate the move (update the board and piece coordinates)
-        self.board[end_row][end_col] = piece
-        self.board[start_row][start_col] = None
-        piece.x, piece.y = end_row, end_col  # Update the coordinates of the piece
-
-        # Check if the king is in check after the move
-        is_safe = not self.isCheck(piece.color)
-
-        # Undo the simulation (restore the board and piece coordinates)
-        self.board[start_row][start_col] = piece
-        self.board[end_row][end_col] = target_piece
-        piece.x, piece.y = original_x, original_y  # Restore original coordinates
-        piece.x, piece.y = original_x, original_y
-
-        return is_safe
-
-
-    def isCheckMate(self, color):
-        """
-        Sprawdza, czy król danego koloru jest zamatowany.
-        :param color: Kolor króla ('white' lub 'black')
-        :return: True, jeśli mat, False w przeciwnym razie
-        """
-        # Sprawdź, czy król jest w szachu
-        print(f'color: {color}')
-        if not self.isCheck(color):
-            return False
-
-        # Iteruj przez wszystkie figury gracza
-        for row in range(self.board_row):
-            for col in range(self.board_col):
-                piece = self.board[row][col]
-                if piece and piece.color == color:
-                    # Pobierz wszystkie dostępne ruchy dla figury
-                    moves = piece.available_moves(self.board, self.last_move)
-                    for (new_row, new_col) in moves:
-                        # Symuluj ruch i sprawdź, czy król jest bezpieczny
-                        if self.is_move_safe(row, col, new_row, new_col):
-                            return False  # Znaleziono ruch, który usuwa szacha
-
-        return True  # Brak możliwych ruchów — mat
