@@ -1,9 +1,11 @@
 from src.ui.components.chess_pieces import *
+from src.ui.components.chess_board import ChessBoard
 
 
 class ChessEndgame:
     def __init__(self, chess):
         self.chess = chess
+        self.chess_board = ChessBoard(self.chess)
         
     def isCheck(self, color):
         """
@@ -95,7 +97,6 @@ class ChessEndgame:
         :return: True, jeśli mat, False w przeciwnym razie
         """
         # Sprawdź, czy król jest w szachu
-        print(f'color: {color}')
         if not self.isCheck(color):
             return False
 
@@ -112,3 +113,26 @@ class ChessEndgame:
                             return False  # Znaleziono ruch, który usuwa szacha
 
         return True  # Brak możliwych ruchów — mat
+
+    def end(self, color):
+        def restart_game():
+            self.chess.board = self.chess_board.init_board()
+            self.chess.turn = 'white'
+            self.chess.last_move = None
+            self.chess.white_captured = []
+            self.chess.black_captured = []
+            self.chess.update_captured_pieces()
+            self.chess.update_board()
+            dialog.close()
+
+        with ui.dialog() as dialog, ui.card().classes('p-4'):
+            ui.label(f'{color.capitalize()} Won').classes('text-xl font-bold text-center w-full')
+            with ui.row().classes('justify-center w-full'):
+                ui.button('Restartuj Grę', on_click=restart_game).classes(
+                    'bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500'
+                )
+                ui.button('Zobacz planszę', on_click=dialog.close).classes(
+                    'bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500'
+                )
+
+        dialog.open()

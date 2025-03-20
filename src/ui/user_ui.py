@@ -19,13 +19,11 @@ class UserUI:
             two = ui.tab('Lista użytkowników')
             three = ui.tab('Szachy')
 
-        # Dark mode switch
-        ui.switch('Dark mode', on_change=self.switch)
-
         # User info and logout button
-        with ui.row().classes('w-full items-center px-4 py-2 rounded-lg'):
+        with ui.row().classes('w-full items-center px-4 py-2 rounded-lg flex justify-center'):
+            ui.switch('Dark mode', on_change=self.switch).classes('flex-grow')
             ui.label(f'Witaj, {app.storage.user.get("username", "")}').classes(
-                'text-xl font-semibold text-primary text-center flex-grow')
+                'text-xl font-semibold text-primary text-center')
             ui.button(on_click=self.logout, icon='logout').props('outline round')
 
         # Define content for each tab

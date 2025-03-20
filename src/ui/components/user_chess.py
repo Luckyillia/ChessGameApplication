@@ -16,7 +16,7 @@ class Chess:
         self.start_pos = None
         self.turn = 'white'
         self.grid = None
-        self.board = self.board_class.init_castling_long()
+        self.board = self.board_class.init_checkmate_1()
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
         self.white_captured = []
         self.black_captured = []
@@ -142,7 +142,7 @@ class Chess:
         # Sprawdzenie szacha po ruchu
         if self.end_game_class.isCheck(self.turn):
             if self.end_game_class.isCheckMate(self.turn):
-                ui.notify(f'Checkmate! {'black' if self.turn == 'white' else 'white'} wins!', color='green', type='positive')
+                self.end_game_class.end('black' if self.turn == 'white' else 'white')
             else:
                 ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
 
@@ -203,3 +203,8 @@ class Chess:
                     piece_type = piece.__class__.__name__.lower()
                     image_path = f'./src/img/black-pieces/{piece_type}-black.png'
                     ui.image(image_path)
+
+    def update_board(self):
+        for i in range(self.board_row):
+            for j in range(self.board_col):
+                self.update_square(i, j)
