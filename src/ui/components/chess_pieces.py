@@ -15,6 +15,10 @@ class Piece:
 
 
 class King(Piece):
+    def __init__(self, color, x, y):
+        super().__init__(color, x, y)
+        self.has_moved = False  # Add this line to track if the king has moved
+
     def available_moves(self, board, last_move):
         moves = []
         for dx in [-1, 0, 1]:
@@ -37,8 +41,18 @@ class Queen(Piece):
         moves.extend(Bishop(self.color, self.x, self.y).available_moves(board, last_move))
         return moves
 
-
 class Rook(Piece):
+    def __init__(self, color, x, y):
+        super().__init__(color, x, y)
+        self.has_moved = False  # Prawidłowa flaga
+
+    def move_piece(self, new_x, new_y):
+        # Jeśli wieża się ruszyła, zaznaczamy to
+        if not self.has_moved:
+            self.has_moved = True
+        self.x, self.y = new_x, new_y
+
+
     def available_moves(self, board, last_move):
         moves = []
         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
@@ -54,7 +68,6 @@ class Rook(Piece):
                 else:
                     break
         return moves
-
 
 class Knight(Piece):
     def available_moves(self, board, last_move):
