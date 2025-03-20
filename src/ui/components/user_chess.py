@@ -57,8 +57,6 @@ class Chess:
                                     self.add_king_context_menu(square, piece)
         self.update_captured_pieces()
 
-
-
     def handle_square_click(self, i, j):
         piece = self.board[i][j]
         if self.start_pos is None:
@@ -72,11 +70,12 @@ class Chess:
             piece = self.board[start_row][start_col]
 
             # 🔥 Poprawne wywołanie available_moves 🔥
-            if (i, j) in piece.available_moves(self.board, self.last_move):
+            if piece and (i, j) in piece.available_moves(self.board, self.last_move):  # Check if piece is not None
                 self.move_piece(start_row, start_col, i, j)
             else:
                 ui.notify('Nieprawidłowy ruch!', color='red')
             self.start_pos = None
+
 
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
@@ -163,10 +162,6 @@ class Chess:
         # If the piece is a king, mark it as moved
         if isinstance(piece, King):
             piece.has_moved = True
-
-        # Check if the move resulted in a check
-        if self.isCheck():
-            ui.notify(f'{self.turn} król w szachu!', color='red')
 
     def add_king_context_menu(self, square, piece):
         with square:
@@ -290,7 +285,7 @@ class Chess:
             image_path = f'./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png'
 
             with square:
-                ui.image(image_path)
+                ui.image(image_path).style('pointer-events: none;') 
 
     def update_captured_pieces(self):
         # Sprawdzenie czy siatki już istnieją, jeśli nie, utworzenie nowych
