@@ -2,4 +2,4 @@
 
 from .user_service import UserService
 
-__all__ = ['UserService']  # Definiuje, co będzie dostępne przy imporcie z pakietu services.
+__all__ = ['UserService']
