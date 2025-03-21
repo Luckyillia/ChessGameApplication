@@ -41,7 +41,7 @@ class Chess:
                     # Make the background div non-interactive
                     with ui.element('div').style(f'background-color: {color}; width: 100px; height: 100px; position: relative;').on(
                             'click', partial(self.handle_square_click, i, j)) as square:
-                        
+
                         # Add the label with the column letter first and then the reversed row number
                         ui.label(f'{chr(ord("a")+j)}{reversed_row}').style(f'position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};')
 
@@ -95,9 +95,10 @@ class Chess:
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
+        is_capture = False  # Flag to track captures
         piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__)
 
-        # Is move is available
+        # Check if the move is available
         if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
             ui.notify('Nieprawidłowy ruch!', color='red')
             return
@@ -118,14 +119,14 @@ class Chess:
         self.board[start_row][start_col] = None
 
         if self.end_game_class.isCheck(piece.color):
-            # Revoke simulation
+            # Undo the simulation
             self.board[start_row][start_col] = piece
             self.board[end_row][end_col] = original_piece
             piece.x, piece.y = original_x, original_y
             ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
             return
 
-        # Revert the move if it was safe
+        # Restore the move if it was safe
         self.board[start_row][start_col] = piece
         self.board[end_row][end_col] = original_piece
         piece.x, piece.y = original_x, original_y
@@ -134,6 +135,7 @@ class Chess:
         if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
             captured_pawn = self.board[start_row][end_col]
             if isinstance(captured_pawn, Pawn) and captured_pawn.color != piece.color:
+                is_capture = True  # Mark en passant capture
                 self.board[start_row][end_col] = None
                 if captured_pawn.color == 'white':
                     self.white_captured.append(captured_pawn)
@@ -143,6 +145,7 @@ class Chess:
 
         # Normal capture
         elif target_piece:
+            is_capture = True  # Mark normal capture
             if target_piece.color == 'white':
                 self.white_captured.append(target_piece)
             else:
@@ -170,10 +173,15 @@ class Chess:
             else:
                 ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
         else:
-            # Check if is StaleMate
+            # Check for stalemate
             if self.end_game_class.isStalemate(self.turn):
-                self.end_game_class.end()  
-                
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            elif self.end_game_class.is_king_vs_king():
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            elif self.end_game_class.is_75_move_rule():
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            else:
+                pass
 
         # Notification after move piece
         notation = f'{chr(ord("a") + end_col)}{8 - end_row}'
@@ -188,6 +196,11 @@ class Chess:
         # If the piece is a king, mark it as moved
         if isinstance(piece, King):
             piece.has_moved = True
+
+        # Check if it's a pawn move
+        is_pawn_move = isinstance(piece, Pawn)
+        # Update the move counter for the 75-move rule
+        self.end_game_class.update_move_count(is_capture or is_pawn_move)
 
     def add_king_context_menu(self, square, piece):
         with square:
@@ -219,7 +232,6 @@ class Chess:
                 ui.image(image_path).style('pointer-events: none;')
                 if isinstance(piece, King):
                     self.add_king_context_menu(square, piece)
-
 
     def update_captured_pieces(self):
         if not hasattr(self, 'captured_white_grid'):

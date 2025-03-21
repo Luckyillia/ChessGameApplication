@@ -19,7 +19,18 @@ class ChessBoard:
         ]
 
     def init_check(self):
-        pass
+        return [
+            [Rook('white', 0, 0), Knight('white', 0, 1), Bishop('white', 0, 2), None,
+             King('white', 0, 4), Bishop('white', 0, 5), Knight('white', 0, 6), Rook('white', 0, 7)],
+            [Pawn('white', 1, i, self.chess) for i in range(8)],
+            [None] * 8,
+            [None, None, None, Queen('white', 3, 3), None, None, None, None],
+            [None] * 8,
+            [None] * 8,
+            [Pawn('black', 6, i, self.chess) for i in range(8)],
+            [Rook('black', 7, 0), Knight('black', 7, 1), Bishop('black', 7, 2), Queen('black', 7, 3),
+             King('black', 7, 4), Bishop('black', 7, 5), Knight('black', 7, 6), Rook('black', 7, 7)]
+        ]
 
     def init_checkmate_1(self):
         return [
@@ -107,7 +118,7 @@ class ChessBoard:
             [None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, King('white', 6, 6), None],
-            [None, None, None, None, None, None, None, None],
+            [None, None, None, Pawn('black', 7, 3, self.chess), None, None, None, None],
         ]
 
     def empty_board(self):
