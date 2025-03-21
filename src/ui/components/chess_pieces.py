@@ -1,5 +1,6 @@
 from nicegui import ui
 
+
 class Piece:
     def __init__(self, color, x, y):
         self.color = color
@@ -146,7 +147,8 @@ class Pawn(Piece):
         def select_promotion(piece_name):
             piece_classes = {'Queen': Queen, 'Rook': Rook, 'Bishop': Bishop, 'Knight': Knight}
             board[self.x][self.y] = piece_classes[piece_name](self.color, self.x, self.y)
-            ui.notify(f"Pionek promowany na {piece_name}!", color='green')
+            # Correctly display the translated name for the selected piece
+            ui.notify(f"Pionek promowany na {self.chess.PIECE_NAMES_PL[piece_name]}!", color='green')
             dialog.close()
             self.chess.update_square(self.x, self.y)
 
@@ -156,3 +158,4 @@ class Pawn(Piece):
                 for strname in ['Queen', 'Rook', 'Bishop', 'Knight']:
                     ui.button(strname, on_click=lambda name=strname: select_promotion(name)).classes('m-2')
         dialog.open()
+
