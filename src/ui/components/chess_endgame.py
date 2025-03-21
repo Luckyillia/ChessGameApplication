@@ -151,19 +151,17 @@ class ChessEndgame:
 
     def is_75_move_rule(self):
         """
-        Sprawdza czy obowiązuje zasada 75 ruchów.
-        :return: True jeśli 150 półruchów (75 pełnych ruchów) minęło bez bicia lub ruchu pionkiem
+        Checks if the 75-move rule applies.
+        :return: True if 150 half-moves (75 full moves) have passed without a capture or pawn move
         """
         return self.move_count_since_last_capture_or_pawn_move >= 150
 
 
     def update_move_count(self, reset_counter):
         """
-        Aktualizuje licznik ruchów dla zasady 75 ruchów.
-        :param reset_counter: True jeśli ruch był biciem lub ruchem pionkiem
+        Updates the move counter for the 75-move rule.
+        :param reset_counter: True if the move was a capture or pawn move
         """
-        print(f"reset_counter: {reset_counter}")
-        print(f"move_count_since_last_capture_or_pawn_move: {self.move_count_since_last_capture_or_pawn_move}")
         if reset_counter:
             self.move_count_since_last_capture_or_pawn_move = 0
         else:
