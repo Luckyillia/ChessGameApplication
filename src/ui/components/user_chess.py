@@ -33,7 +33,6 @@ class Chess:
                     # Make the background div non-interactive
                     with ui.element('div').style(f'background-color: {color}; width: 100px; height: 100px;').on(
                             'click', partial(self.handle_square_click, i, j)) as square:
-
                         self.squares[i][j] = square
                         piece = self.board[i][j]
                         if piece:
@@ -54,9 +53,9 @@ class Chess:
         if self.start_pos is None:
             if piece and self.turn == piece.color:
                 self.start_pos = (i, j)
-                ui.notify(f'Wybrano figurę na ({i}, {j})', color='blue')
+                ui.notify(f'Selected piece at ({i}, {j})', color='blue')
             else:
-                ui.notify('Nie możesz ruszyć tej figury!', color='red')
+                ui.notify('You cannot move this piece!', color='red')
         else:
             start_row, start_col = self.start_pos
             piece = self.board[start_row][start_col]
@@ -65,43 +64,42 @@ class Chess:
                 # Check if piece is not None
                 self.move_piece(start_row, start_col, i, j)
             else:
-                ui.notify('Nieprawidłowy ruch!', color='red')
+                ui.notify('Invalid move!', color='red')
             self.start_pos = None
-
 
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
+        is_capture = False  # Flag to track captures
 
-        # Is move is available
+        # Check if the move is available
         if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
-            ui.notify('Nieprawidłowy ruch!', color='red')
+            ui.notify('Invalid move!', color='red')
             return
 
         # If the piece is a King, ensure the move is safe
         if isinstance(piece, King):
             if not self.end_game_class.is_move_safe(start_row, start_col, end_row, end_col):
-                ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
+                ui.notify('You cannot make this move because your king will be in check!', color='red')
                 return
 
         # Simulate the move and check for check
         original_piece = self.board[end_row][end_col]
         original_x, original_y = piece.x, piece.y
 
-
         piece.x, piece.y = end_row, end_col
         self.board[end_row][end_col] = piece
         self.board[start_row][start_col] = None
 
         if self.end_game_class.isCheck(piece.color):
-            # Cofnięcie symulacji
+            # Undo the simulation
             self.board[start_row][start_col] = piece
             self.board[end_row][end_col] = original_piece
             piece.x, piece.y = original_x, original_y
-            ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
+            ui.notify('You cannot make this move because your king will be in check!', color='red')
             return
 
-        # Revert the move if it was safe
+        # Restore the move if it was safe
         self.board[start_row][start_col] = piece
         self.board[end_row][end_col] = original_piece
         piece.x, piece.y = original_x, original_y
@@ -110,6 +108,7 @@ class Chess:
         if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
             captured_pawn = self.board[start_row][end_col]
             if isinstance(captured_pawn, Pawn) and captured_pawn.color != piece.color:
+                is_capture = True  # Mark en passant capture
                 self.board[start_row][end_col] = None
                 if captured_pawn.color == 'white':
                     self.white_captured.append(captured_pawn)
@@ -119,6 +118,7 @@ class Chess:
 
         # Normal capture
         elif target_piece:
+            is_capture = True  # Mark normal capture
             if target_piece.color == 'white':
                 self.white_captured.append(target_piece)
             else:
@@ -139,35 +139,45 @@ class Chess:
         # Change turns
         self.turn = 'black' if self.turn == 'white' else 'white'
 
-        # Sprawdzenie szacha po ruchu
+        # Check for check after the move
         if self.end_game_class.isCheck(self.turn):
             if self.end_game_class.isCheckMate(self.turn):
                 self.end_game_class.end('black' if self.turn == 'white' else 'white')
             else:
                 ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
         else:
-            # Sprawdzenie, czy doszło do pata (stalemate)
+            # Check for stalemate
             if self.end_game_class.isStalemate(self.turn):
-                self.end_game_class.end()  # Zakładamy, że metoda `end` obsługuje remis
-                
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            elif self.end_game_class.is_king_vs_king():
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            elif self.end_game_class.is_75_move_rule():
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            else:
+                pass
 
-        # Powiadomienie o przeniesieniu figury
-        ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
+        # Notify about the moved piece
+        ui.notify(f'Moved {piece.__class__.__name__} to ({end_row}, {end_col})', color='blue')
 
         # Update captured pieces
         self.update_captured_pieces()
 
         self.last_move = (piece, (start_row, start_col), (end_row, end_col))
 
-        # If the piece is a king, mark it as moved
+        # If the piece is a King, mark it as moved
         if isinstance(piece, King):
             piece.has_moved = True
+
+        # Check if it's a pawn move
+        is_pawn_move = isinstance(piece, Pawn)
+        # Update the move counter for the 75-move rule
+        self.end_game_class.update_move_count(is_capture or is_pawn_move)
 
     def add_king_context_menu(self, square, piece):
         with square:
             with ui.context_menu():
-                ui.menu_item('Roszada długa', on_click=partial(self.handling_castling.handle_castling, piece, 'long'))
-                ui.menu_item('Roszada krótka', on_click=partial(self.handling_castling.handle_castling, piece, 'short'))
+                ui.menu_item('Long castling', on_click=partial(self.handling_castling.handle_castling, piece, 'long'))
+                ui.menu_item('Short castling', on_click=partial(self.handling_castling.handle_castling, piece, 'short'))
 
 
     def update_square(self, row, col):
