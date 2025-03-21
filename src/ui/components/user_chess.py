@@ -16,12 +16,24 @@ class Chess:
         self.start_pos = None
         self.turn = 'white'
         self.grid = None
-        self.board = self.board_class.init_stalemate()
+        self.board = self.board_class.init_board()
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
         self.white_captured = []
         self.black_captured = []
         self.last_move = None
         self.create_chessboard()
+        self.PIECE_NAMES_PL = {
+        "Pawn": "Pionek",
+        "Rook": "Wieża",
+        "Knight": "Skoczek",
+        "Bishop": "Goniec",
+        "Queen": "Królowa",
+        "King": "Król",
+        }
+        self.TURN_PL = {
+            "black": "Czarnych",
+            "white": "Białych"
+        }
 
     def create_chessboard(self):
         self.grid = ui.grid(columns=8).classes('w-auto m-auto gap-0')
@@ -60,18 +72,6 @@ class Chess:
                                     self.add_king_context_menu(square, piece)
         self.update_captured_pieces()
 
-
-
-    PIECE_NAMES_PL = {
-        "Pawn": "Pionek",
-        "Rook": "Wieża",
-        "Knight": "Skoczek",
-        "Bishop": "Goniec",
-        "Queen": "Królowa",
-        "King": "Król"
-    }
-
-
     def handle_square_click(self, i, j):
         piece = self.board[i][j]
         piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__)
@@ -92,11 +92,13 @@ class Chess:
                 ui.notify('Nieprawidłowy ruch!', color='red')
             self.start_pos = None
 
+    
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
         is_capture = False  # Flag to track captures
         piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__)
+        turn_pl = self.TURN_PL.get(self.turn,self.turn)
 
         # Check if the move is available
         if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
@@ -171,7 +173,11 @@ class Chess:
             if self.end_game_class.isCheckMate(self.turn):
                 self.end_game_class.end('black' if self.turn == 'white' else 'white')
             else:
-                ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
+                piece_name = self.PIECE_NAMES_PL["King"]  # Get the name for "King"
+                turn_name = self.TURN_PL[self.turn]  # Get the name for the turn ("Białych" or "Czarnych")
+                ui.notify(f'{turn_name} {piece_name} jest w szachu!', color='red')
+
+
         else:
             # Check for stalemate
             if self.end_game_class.isStalemate(self.turn):
