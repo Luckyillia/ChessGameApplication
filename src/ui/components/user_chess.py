@@ -25,14 +25,25 @@ class Chess:
 
     def create_chessboard(self):
         self.grid = ui.grid(columns=8).classes('w-auto m-auto gap-0')
+
+        # Create chessboard
         with self.grid:
             for i in range(self.board_row):
                 for j in range(self.board_col):
+                    # Estimate background color
                     color = '#769656' if (i + j) % 2 == 0 else '#EEEED2'
+                    # Estimate text color
+                    text_color = '#EEEED2' if color == '#769656' else '#769656'
+
+                    # Calculate reversed row number (8 at the top, 1 at the bottom)
+                    reversed_row = self.board_row - i  # Reverse the order of rows (8 -> 1)
 
                     # Make the background div non-interactive
-                    with ui.element('div').style(f'background-color: {color}; width: 100px; height: 100px;').on(
+                    with ui.element('div').style(f'background-color: {color}; width: 100px; height: 100px; position: relative;').on(
                             'click', partial(self.handle_square_click, i, j)) as square:
+                        
+                        # Add the label with the column letter first and then the reversed row number
+                        ui.label(f'{chr(ord("a")+j)}{reversed_row}').style(f'position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};')
 
                         self.squares[i][j] = square
                         piece = self.board[i][j]
@@ -49,12 +60,25 @@ class Chess:
                                     self.add_king_context_menu(square, piece)
         self.update_captured_pieces()
 
+
+
+    PIECE_NAMES_PL = {
+        "Pawn": "Pionek",
+        "Rook": "Wieża",
+        "Knight": "Skoczek",
+        "Bishop": "Goniec",
+        "Queen": "Królowa",
+        "King": "Król"
+    }
+
+
     def handle_square_click(self, i, j):
         piece = self.board[i][j]
+        piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__)
         if self.start_pos is None:
             if piece and self.turn == piece.color:
                 self.start_pos = (i, j)
-                ui.notify(f'Wybrano figurę na ({i}, {j})', color='blue')
+                ui.notify(f'Wybrano {piece_name_pl}', color='blue')
             else:
                 ui.notify('Nie możesz ruszyć tej figury!', color='red')
         else:
@@ -68,10 +92,10 @@ class Chess:
                 ui.notify('Nieprawidłowy ruch!', color='red')
             self.start_pos = None
 
-
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
+        piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__)
 
         # Is move is available
         if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
@@ -94,7 +118,7 @@ class Chess:
         self.board[start_row][start_col] = None
 
         if self.end_game_class.isCheck(piece.color):
-            # Cofnięcie symulacji
+            # Revoke simulation
             self.board[start_row][start_col] = piece
             self.board[end_row][end_col] = original_piece
             piece.x, piece.y = original_x, original_y
@@ -139,20 +163,22 @@ class Chess:
         # Change turns
         self.turn = 'black' if self.turn == 'white' else 'white'
 
-        # Sprawdzenie szacha po ruchu
+        # Check check after move
         if self.end_game_class.isCheck(self.turn):
             if self.end_game_class.isCheckMate(self.turn):
                 self.end_game_class.end('black' if self.turn == 'white' else 'white')
             else:
                 ui.notify(f'{self.turn.capitalize()} king is in check!', color='red')
         else:
-            # Sprawdzenie, czy doszło do pata (stalemate)
+            # Check if is StaleMate
             if self.end_game_class.isStalemate(self.turn):
-                self.end_game_class.end()  # Zakładamy, że metoda `end` obsługuje remis
+                self.end_game_class.end()  
                 
 
-        # Powiadomienie o przeniesieniu figury
-        ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
+        # Notification after move piece
+        notation = f'{chr(ord("a") + end_col)}{8 - end_row}'
+        ui.notify(f'Przeniesiono {piece_name_pl} na {notation}', color='blue')
+
 
         # Update captured pieces
         self.update_captured_pieces()
@@ -174,6 +200,15 @@ class Chess:
         square = self.squares[row][col]
         square.clear()
 
+        # Calculate reversed row number (8 at the top, 1 at the bottom)
+        reversed_row = self.board_row - row  # Reverse the order of rows (8 -> 1)
+
+        # Recreating the numbering of the fields
+        color = '#769656' if (row + col) % 2 == 0 else '#EEEED2'
+        text_color = '#EEEED2' if color == '#769656' else '#769656'
+        with square:
+                    ui.label(f'{chr(ord("a")+col)}{reversed_row}').style(f'position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};')
+
         piece = self.board[row][col]
         if piece:
             piece_type = piece.__class__.__name__.lower()
@@ -184,6 +219,7 @@ class Chess:
                 ui.image(image_path).style('pointer-events: none;')
                 if isinstance(piece, King):
                     self.add_king_context_menu(square, piece)
+
 
     def update_captured_pieces(self):
         if not hasattr(self, 'captured_white_grid'):
