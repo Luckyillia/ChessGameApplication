@@ -33,7 +33,6 @@ class Chess:
                     # Make the background div non-interactive
                     with ui.element('div').style(f'background-color: {color}; width: 100px; height: 100px;').on(
                             'click', partial(self.handle_square_click, i, j)) as square:
-
                         self.squares[i][j] = square
                         piece = self.board[i][j]
                         if piece:
@@ -68,26 +67,25 @@ class Chess:
                 ui.notify('Nieprawidłowy ruch!', color='red')
             self.start_pos = None
 
-
     def move_piece(self, start_row, start_col, end_row, end_col):
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
+        is_capture = False  # Flaga przechwytująca informację o biciu
 
-        # Is move is available
+        # Sprawdź czy ruch jest dostępny
         if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
             ui.notify('Nieprawidłowy ruch!', color='red')
             return
 
-        # If the piece is a King, ensure the move is safe
+        # Jeśli figura to król, sprawdź czy ruch jest bezpieczny
         if isinstance(piece, King):
             if not self.end_game_class.is_move_safe(start_row, start_col, end_row, end_col):
                 ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
                 return
 
-        # Simulate the move and check for check
+        # Symulacja ruchu i sprawdzenie szacha
         original_piece = self.board[end_row][end_col]
         original_x, original_y = piece.x, piece.y
-
 
         piece.x, piece.y = end_row, end_col
         self.board[end_row][end_col] = piece
@@ -101,15 +99,16 @@ class Chess:
             ui.notify('Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!', color='red')
             return
 
-        # Revert the move if it was safe
+        # Przywróć ruch jeśli był bezpieczny
         self.board[start_row][start_col] = piece
         self.board[end_row][end_col] = original_piece
         piece.x, piece.y = original_x, original_y
 
-        # Handle en passant capture
+        # Obsługa bicia w przelocie
         if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
             captured_pawn = self.board[start_row][end_col]
             if isinstance(captured_pawn, Pawn) and captured_pawn.color != piece.color:
+                is_capture = True  # Oznacz bicie w przelocie
                 self.board[start_row][end_col] = None
                 if captured_pawn.color == 'white':
                     self.white_captured.append(captured_pawn)
@@ -117,14 +116,15 @@ class Chess:
                     self.black_captured.append(captured_pawn)
                 self.update_square(start_row, end_col)
 
-        # Normal capture
+        # Normalne bicie
         elif target_piece:
+            is_capture = True  # Oznacz zwykłe bicie
             if target_piece.color == 'white':
                 self.white_captured.append(target_piece)
             else:
                 self.black_captured.append(target_piece)
 
-        # Perform the move
+        # Wykonaj ruch
         self.board[start_row][start_col] = None
         if isinstance(piece, Pawn):
             piece.move_piece(end_row, end_col, self.board)
@@ -132,11 +132,11 @@ class Chess:
             piece.move_piece(end_row, end_col)
         self.board[end_row][end_col] = piece
 
-        # Update the board
+        # Aktualizuj planszę
         self.update_square(start_row, start_col)
         self.update_square(end_row, end_col)
 
-        # Change turns
+        # Zmiana tury
         self.turn = 'black' if self.turn == 'white' else 'white'
 
         # Sprawdzenie szacha po ruchu
@@ -149,19 +149,30 @@ class Chess:
             # Sprawdzenie, czy doszło do pata (stalemate)
             if self.end_game_class.isStalemate(self.turn):
                 self.end_game_class.end()  # Zakładamy, że metoda `end` obsługuje remis
-                
+            elif self.end_game_class.is_king_vs_king():
+                self.end_game_class.end()  # Zakładamy, że metoda `end` obsługuje remis
+            elif self.end_game_class.is_75_move_rule():
+                self.end_game_class.end()  # Zakładamy, że metoda `end` obsługuje remis
+            else:
+                pass
 
         # Powiadomienie o przeniesieniu figury
         ui.notify(f'Przeniesiono {piece.__class__.__name__} na ({end_row}, {end_col})', color='blue')
 
-        # Update captured pieces
+        # Aktualizuj zbite figury
         self.update_captured_pieces()
 
         self.last_move = (piece, (start_row, start_col), (end_row, end_col))
 
-        # If the piece is a king, mark it as moved
+        # Jeśli figura to król, oznacz go jako poruszony
         if isinstance(piece, King):
             piece.has_moved = True
+
+        # Sprawdź czy to ruch pionkiem
+        is_pawn_move = isinstance(piece, Pawn)
+        print(is_pawn_move, is_capture)
+        # Zaktualizuj licznik dla zasady 75 ruchów
+        self.end_game_class.update_move_count(is_capture or is_pawn_move)
 
     def add_king_context_menu(self, square, piece):
         with square:

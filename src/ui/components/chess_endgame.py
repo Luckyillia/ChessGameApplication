@@ -1,17 +1,18 @@
 from src.ui.components.chess_pieces import *
-from src.ui.components.chess_board import * 
+from src.ui.components.chess_board import *
 
 
 class ChessEndgame:
     def __init__(self, chess):
         self.chess = chess
         self.chess_board = ChessBoard(self.chess)
-        
+        self.move_count_since_last_capture_or_pawn_move = 0  # Counter for the 50-move rule
+
     def isCheck(self, color):
         """
-        Sprawdza, czy król danego koloru jest w szachu.
-        :param color: Kolor króla ('white' lub 'black')
-        :return: True, jeśli król jest w szachu, False w przeciwnym razie
+        Checks if the king of the given color is in check.
+        :param color: Color of the king ('white' or 'black')
+        :return: True if the king is in check, False otherwise
         """
         king_pos = None
         for row in self.chess.board:
@@ -91,51 +92,84 @@ class ChessEndgame:
 
     def isCheckMate(self, color):
         """
-        Sprawdza, czy król danego koloru jest zamatowany.
-        :param color: Kolor króla ('white' lub 'black')
-        :return: True, jeśli mat, False w przeciwnym razie
+        Checks if the king of the given color is checkmated.
+        :param color: Color of the king ('white' or 'black')
+        :return: True if checkmate, False otherwise
         """
-        # Sprawdź, czy król jest w szachu
+        # Check if the king is in check
         if not self.isCheck(color):
             return False
 
-        # Iteruj przez wszystkie figury gracza
+        # Iterate through all pieces of the player
         for row in range(self.chess.board_row):
             for col in range(self.chess.board_col):
                 piece = self.chess.board[row][col]
                 if piece and piece.color == color:
-                    # Pobierz wszystkie dostępne ruchy dla figury
+                    # Get all available moves for the piece
                     moves = piece.available_moves(self.chess.board, self.chess.last_move)
                     for (new_row, new_col) in moves:
-                        # Symuluj ruch i sprawdź, czy król jest bezpieczny
+                        # Simulate the move and check if the king is safe
                         if self.is_move_safe(row, col, new_row, new_col):
-                            return False  # Znaleziono ruch, który usuwa szacha
+                            return False  # Found a move that removes the check
 
-        return True  # Brak możliwych ruchów — mat
+        return True  # No possible moves — checkmate
 
     def isStalemate(self, color):
         """
-        Sprawdza, czy wystąpił pat.
-        :param color: Kolor gracza, który ma wykonać ruch ('white' lub 'black')
-        :return: True, jeśli pat, False w przeciwnym razie
+        Checks if a stalemate has occurred.
+        :param color: Color of the player whose turn it is ('white' or 'black')
+        :return: True if stalemate, False otherwise
         """
-        # Sprawdź, czy król nie jest w szachu
+        # Check if the king is not in check
         if self.isCheck(color):
             return False
 
-        # Iteruj przez wszystkie figury gracza
+        # Iterate through all pieces of the player
         for row in range(self.chess.board_row):
             for col in range(self.chess.board_col):
                 piece = self.chess.board[row][col]
                 if piece and piece.color == color:
-                    # Pobierz wszystkie dostępne ruchy dla figury
+                    # Get all available moves for the piece
                     moves = piece.available_moves(self.chess.board, self.chess.last_move)
                     for (new_row, new_col) in moves:
-                        # Symuluj ruch i sprawdź, czy król jest bezpieczny
+                        # Simulate the move and check if the king is safe
                         if self.is_move_safe(row, col, new_row, new_col):
-                            return False  # Znaleziono legalny ruch
+                            return False  # Found a legal move
 
-        return True  # Brak możliwych ruchów — pat
+        return True  # No possible moves — stalemate
+
+    def is_king_vs_king(self):
+        """
+        Checks if only kings are left on the board.
+        :return: True if only kings remain, False otherwise
+        """
+        for row in self.chess.board:
+            for piece in row:
+                if piece and not isinstance(piece, King):
+                    return False
+        return True
+
+    def is_75_move_rule(self):
+        """
+        Sprawdza czy obowiązuje zasada 75 ruchów.
+        :return: True jeśli 150 półruchów (75 pełnych ruchów) minęło bez bicia lub ruchu pionkiem
+        """
+        return self.move_count_since_last_capture_or_pawn_move >= 150
+
+
+    def update_move_count(self, reset_counter):
+        """
+        Aktualizuje licznik ruchów dla zasady 75 ruchów.
+        :param reset_counter: True jeśli ruch był biciem lub ruchem pionkiem
+        """
+        print(f"reset_counter: {reset_counter}")
+        print(f"move_count_since_last_capture_or_pawn_move: {self.move_count_since_last_capture_or_pawn_move}")
+        if reset_counter:
+            self.move_count_since_last_capture_or_pawn_move = 0
+        else:
+            self.move_count_since_last_capture_or_pawn_move += 1
+
+
 
     def end(self, color=None):
         def restart_game():
@@ -144,6 +178,7 @@ class ChessEndgame:
             self.chess.last_move = None
             self.chess.white_captured = []
             self.chess.black_captured = []
+            self.move_count_since_last_capture_or_pawn_move = 0
             self.chess.update_captured_pieces()
             self.chess.update_board()
             dialog.close()
@@ -153,12 +188,12 @@ class ChessEndgame:
                 ui.label(f'{color.capitalize()} Won').classes('text-xl font-bold text-center w-full')
             else:
                 ui.label('Draw').classes('text-xl font-bold text-center w-full')
-            
+
             with ui.row().classes('justify-center w-full'):
-                ui.button('Restartuj Grę', on_click=restart_game).classes(
+                ui.button('Restart Game', on_click=restart_game).classes(
                     'bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500'
                 )
-                ui.button('Zobacz planszę', on_click=dialog.close).classes(
+                ui.button('View Board', on_click=dialog.close).classes(
                     'bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500'
                 )
 
