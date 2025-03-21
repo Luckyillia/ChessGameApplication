@@ -44,6 +44,15 @@
             "password": "bot",
             "pesel": "55555555555",
             "avatar": "https://robohash.org/8CG6E"
+        },
+        {
+            "id": "11c05cac-652e-4497-a361-f3a872fe5d2a",
+            "name": "max",
+            "surname": "kuster",
+            "username": "q",
+            "password": "123",
+            "pesel": "11111111111",
+            "avatar": "https://robohash.org/861TR"
         }
     ]
 }

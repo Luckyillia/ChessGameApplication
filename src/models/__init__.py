@@ -2,4 +2,4 @@
 
 from .user import User
 
-__all__ = ['User']  # Definiuje, co będzie dostępne przy imporcie z pakietu models.
+__all__ = ['User']
