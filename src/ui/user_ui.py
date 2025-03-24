@@ -22,9 +22,17 @@ class UserUI:
         # User info and logout button
         with ui.row().classes('w-full items-center px-4 py-2 rounded-lg flex justify-center'):
             ui.switch('Dark mode', on_change=self.switch).classes(' flex-grow')
+            result = ui.label().classes('mr-auto')
             ui.label(f'Witaj, {app.storage.user.get("username", "")}').classes(
                 'text-xl font-semibold text-primary text-center')
             ui.button(on_click=self.logout, icon='logout').props('outline round')
+            with ui.button(icon='menu').props('outline round'):
+                with ui.menu() as menu:
+                    ui.menu_item('Utwórz nowy pokój', lambda: self.create_new_room())
+                    ui.menu_item('Wyjdź z pokoju', lambda: self.exit_room())
+                    ui.menu_item('Dołacz do pokoju',lambda: self.join_room())
+                    ui.separator()
+                    ui.menu_item('Close', menu.close)
 
         # Define content for each tab
         with ui.tab_panels(tabs, value=one).classes('w-full flex justify-center items-center'):
@@ -48,3 +56,12 @@ class UserUI:
         # Clear user session and navigate to login page
         app.storage.user.clear()
         ui.navigate.to('/login')
+
+    def create_new_room(self):
+        ui.notify('Creating new room')
+
+    def exit_room(self):
+        ui.notify('Exiting room')
+
+    def join_room(self):
+        ui.notify('Joining room')
