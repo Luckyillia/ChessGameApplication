@@ -1,5 +1,3 @@
-import time
-
 from nicegui import app, ui
 from functools import partial
 
@@ -8,8 +6,7 @@ from src.ui.components.chess_castling import ChessCastling
 from src.ui.components.chess_endgame import ChessEndgame
 from src.ui.components.chess_pieces import King, Pawn
 from src.services.game_state import GameStateService
-from src.services.user_service import UserService
-
+from src.ui.components.chess_room_management import ChessRoomManagement
 
 
 class Chess:
@@ -22,6 +19,7 @@ class Chess:
         self.board_class = ChessBoard()
         self.end_game_class = ChessEndgame(self)
         self.handling_castling = ChessCastling(self)
+        self.chess_room_management = ChessRoomManagement(self)
 
         self.start_pos = None
         self.turn = 'white'
@@ -35,11 +33,9 @@ class Chess:
 
         # Try to load saved game state
         if app.storage.user.get('game_state_id'):
-            self.load_game_state(app.storage.user.get('game_state_id'))
+            self.chess_room_management.load_game_state(app.storage.user.get('game_state_id'))
 
         self.create_chessboard()
-
-
 
         self.PIECE_NAMES_PL = {
             "Pawn": "Pionek",
@@ -54,149 +50,7 @@ class Chess:
             "white": "Białych"
         }
 
-        ui.timer(interval=1.0, callback=self.check_for_updates)
-
-    def check_for_updates(self,):
-        current_state = self.game_state_service.load_game_state(app.storage.user.get('game_state_id'))
-        if not current_state:
-            return
-        if current_state and current_state.get('timestamp', 0) > self.last_update:
-            self.load_game_state(app.storage.user.get('game_state_id'))
-            self.update_board()
-            self.update_captured_pieces()
-            self.last_update = current_state['timestamp']
-
-    def load_game_state(self, game_state_id):
-        """Load the game state from storage"""
-        game_state = self.game_state_service.load_game_state(game_state_id)
-        if not game_state:
-            app.storage.user.update({'game_state_id': None})
-            users = UserService().load_data()
-            for user in users:
-                if user == app.storage.user.get('user_id'):
-                    user['gameState'] = None
-            UserService().write_data(users)
-            ui.notify('Nie znaleziono stanu gry!', color='red')
-            ui.navigate.to('/')
-            return
-        # Load board state if it exists
-        if game_state.get('board'):
-            self.board = self.deserialize_board(game_state['board'])
-
-            # Load other game state properties
-            self.white_captured = self.deserialize_pieces(game_state.get('captured_white', []))
-            self.black_captured = self.deserialize_pieces(game_state.get('captured_black', []))
-            self.turn = game_state.get('turn', 'white')
-
-            # Load last move if it exists
-            if game_state.get('last_move'):
-                piece_data, start_pos, end_pos = game_state['last_move']
-                piece = self.deserialize_piece(piece_data)
-                self.last_move = (piece, start_pos, end_pos)
-            else:
-                self.last_move = None
-
-    def save_game_state(self):
-        """Save the current game state to storage"""
-        if not app.storage.user.get('game_state_id'):
-            return
-
-        game_state = {
-            'board': self.serialize_board(),
-            'captured_white': self.serialize_pieces(self.white_captured),
-            'captured_black': self.serialize_pieces(self.black_captured),
-            'turn': self.turn,
-            'timestamp': time.time()
-        }
-
-        # Save last move if it exists
-        if self.last_move:
-            piece, start_pos, end_pos = self.last_move
-            game_state['last_move'] = [self.serialize_piece(piece), start_pos, end_pos]
-        else:
-            game_state['last_move'] = None
-
-        self.game_state_service.save_game_state(app.storage.user.get('game_state_id'), game_state)
-
-    def serialize_board(self):
-        """Convert the board to a serializable format"""
-        serialized_board = []
-        for row in range(self.board_row):
-            board_row = []
-            for col in range(self.board_col):
-                piece = self.board[row][col]
-                if piece:
-                    board_row.append(self.serialize_piece(piece))
-                else:
-                    board_row.append(None)
-            serialized_board.append(board_row)
-        return serialized_board
-
-    def serialize_piece(self, piece):
-        """Convert a piece to a serializable format"""
-        if not piece:
-            return None
-
-        return {
-            'type': piece.__class__.__name__,
-            'color': piece.color,
-            'x': piece.x,
-            'y': piece.y,
-            'has_moved': getattr(piece, 'has_moved', False),
-            'first_move': getattr(piece, 'first_move', False)
-        }
-
-    def serialize_pieces(self, pieces):
-        """Convert a list of pieces to a serializable format"""
-        return [self.serialize_piece(piece) for piece in pieces]
-
-    def deserialize_board(self, board_data):
-        """Convert serialized board data back to a board with piece objects"""
-        board = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
-        for row in range(self.board_row):
-            for col in range(self.board_col):
-                if board_data[row][col]:
-                    board[row][col] = self.deserialize_piece(board_data[row][col])
-        return board
-
-    def deserialize_piece(self, piece_data):
-        """Convert serialized piece data back to a piece object"""
-        if not piece_data:
-            return None
-
-        # Import all piece classes
-        from src.ui.components.chess_pieces import Pawn, Rook, Knight, Bishop, Queen, King
-
-        # Map piece type names to classes
-        piece_classes = {
-            'Pawn': Pawn,
-            'Rook': Rook,
-            'Knight': Knight,
-            'Bishop': Bishop,
-            'Queen': Queen,
-            'King': King
-        }
-
-        # Create the piece object
-        piece_class = piece_classes.get(piece_data['type'])
-        if not piece_class:
-            return None
-        if isinstance(piece_class, Pawn):
-            piece = piece_class(piece_data['color'], piece_data['x'], piece_data['y'], piece_data['has_moved'])
-        else:
-            piece = piece_class(piece_data['color'], piece_data['x'], piece_data['y'])
-
-        # Set additional properties
-        if 'has_moved' in piece_data:
-            piece.has_moved = piece_data['has_moved']
-        if 'first_move' in piece_data:
-            piece.first_move = piece_data['first_move']
-
-        return piece
-
-    def deserialize_pieces(self, pieces_data):
-        """Convert serialized pieces data back to piece objects"""
-        return [self.deserialize_piece(piece_data) for piece_data in pieces_data]
+        ui.timer(interval=1.0, callback=self.chess_room_management.check_for_updates)
 
     def create_chessboard(self):
         if app.storage.user.get('game_state_id') is None:
@@ -383,7 +237,7 @@ class Chess:
         self.end_game_class.update_move_count(is_capture or is_pawn_move)
 
         # Save game state after move
-        self.save_game_state()
+        self.chess_room_management.save_game_state()
 
     # [Rest of the methods remain the same]
     def add_king_context_menu(self, square, piece):

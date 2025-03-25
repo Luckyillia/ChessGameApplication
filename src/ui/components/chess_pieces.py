@@ -1,5 +1,7 @@
 from nicegui import ui
 
+from src.ui.components.chess_room_management import ChessRoomManagement
+
 
 class Piece:
     def __init__(self, color, x, y):
@@ -149,7 +151,7 @@ class Pawn(Piece):
             # Correctly display the translated name for the selected piece
             ui.notify(f"Pionek promowany na {chess.PIECE_NAMES_PL[piece_name]}!", color='green')
             dialog.close()
-            chess.save_game_state()
+            chess.chess_room_management.save_game_state()
             chess.update_square(self.x, self.y)
 
         with ui.dialog() as dialog, ui.card():

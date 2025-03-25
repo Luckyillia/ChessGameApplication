@@ -83,7 +83,7 @@ class UserUI:
             app.storage.user.update({'game_state_id': game_state_id})
             self.chess.board = ChessBoard().init_board()
             self.chess.update_board()
-            self.chess.save_game_state()
+            self.chess.chess_room_management.save_game_state()
             self.room_code_label.text = f'Kod pokoju: {game_state_id}'
             ui.update()  # Wymuś aktualizację interfejsu
             self.room_dialog.open()
@@ -132,7 +132,7 @@ class UserUI:
             app.storage.user.update({'game_state_id': room_code})
 
             # Inicjalizacja szachów
-            self.chess.load_game_state(room_code)
+            self.chess.chess_room_management.load_game_state(room_code)
             self.chess.update_board()
 
             ui.notify('Pomyślnie dołączono do pokoju!', type='positive')
