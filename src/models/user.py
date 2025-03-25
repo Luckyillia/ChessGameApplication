@@ -16,5 +16,6 @@ class User:
             "username": self.username,
             "password": self.password,
             "pesel": self.pesel,
-            "avatar": self.avatar
+            "avatar": self.avatar,
+            "gameState": None
         }

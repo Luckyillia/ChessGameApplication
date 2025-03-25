@@ -101,9 +101,9 @@ class Bishop(Piece):
 
 
 class Pawn(Piece):
-    def __init__(self, color, x, y):
+    def __init__(self, color, x, y, is_moved=False):
         super().__init__(color, x, y)
-        self.is_moved = False
+        self.has_moved = is_moved
 
     def available_moves(self, board, last_move):
         moves = []
@@ -114,7 +114,7 @@ class Pawn(Piece):
         if 0 <= self.x + direction < 8 and board[self.x + direction][self.y] is None:
             moves.append((self.x + direction, self.y))
 
-            if not self.is_moved and 0 <= self.x + 2 * direction < 8 and board[self.x + 2 * direction][self.y] is None:
+            if not self.has_moved and 0 <= self.x + 2 * direction < 8 and board[self.x + 2 * direction][self.y] is None:
                 moves.append((self.x + 2 * direction, self.y))
 
         for dy in [-1, 1]:
@@ -132,23 +132,24 @@ class Pawn(Piece):
 
         return moves
 
-    def move_piece(self, new_x, new_y, board, chess):
+    def move_piece(self, new_x, new_y, chess):
         """Moves the pawn and handles promotion if applicable."""
         self.x = new_x
         self.y = new_y
-        self.is_moved = True
+        self.has_moved = True
         if (self.color == 'white' and self.x == 7) or (self.color == 'black' and self.x == 0):
-            if self.promote_pawn(board ,chess):
+            if self.promote_pawn(chess):
                 return True
 
-    def promote_pawn(self, board ,chess):
+    def promote_pawn(self, chess):
         """Handles pawn promotion to a selected piece."""
         def select_promotion(piece_name):
             piece_classes = {'Queen': Queen, 'Rook': Rook, 'Bishop': Bishop, 'Knight': Knight}
-            board[self.x][self.y] = piece_classes[piece_name](self.color, self.x, self.y)
+            chess.board[self.x][self.y] = piece_classes[piece_name](self.color, self.x, self.y)
             # Correctly display the translated name for the selected piece
             ui.notify(f"Pionek promowany na {chess.PIECE_NAMES_PL[piece_name]}!", color='green')
             dialog.close()
+            chess.save_game_state()
             chess.update_square(self.x, self.y)
 
         with ui.dialog() as dialog, ui.card():

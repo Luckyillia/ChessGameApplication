@@ -1,10 +1,14 @@
+import time
+
 from nicegui import app, ui
 from functools import partial
+
 from src.ui.components.chess_board import ChessBoard
 from src.ui.components.chess_castling import ChessCastling
 from src.ui.components.chess_endgame import ChessEndgame
 from src.ui.components.chess_pieces import King, Pawn
 from src.services.game_state import GameStateService
+from src.services.user_service import UserService
 
 
 
@@ -13,34 +17,28 @@ class Chess:
         # Initialize board size and set the initial state
         self.board_row = 8
         self.board_col = 8
+
         self.game_state_service = GameStateService()
-
-        # Load game state if available
-        self.game_state_id = app.storage.user.get('game_state_id')
-
         self.board_class = ChessBoard()
         self.end_game_class = ChessEndgame(self)
         self.handling_castling = ChessCastling(self)
+
         self.start_pos = None
         self.turn = 'white'
         self.grid = None
+        self.board = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
         self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
         self.white_captured = []
         self.black_captured = []
         self.last_move = None
+        self.last_update = 0
 
         # Try to load saved game state
-        if self.game_state_id:
-            self.load_game_state()
-        else:
-            # Initialize a new board if no state is found
-            self.board = self.board_class.init_board()
-            self.save_game_state()  # Save the initial state
+        if app.storage.user.get('game_state_id'):
+            self.load_game_state(app.storage.user.get('game_state_id'))
 
         self.create_chessboard()
 
-        self.last_update = 0
-        ui.timer(interval=1.0, callback=self.check_for_updates)
 
 
         self.PIECE_NAMES_PL = {
@@ -55,47 +53,52 @@ class Chess:
             "black": "Czarnych",
             "white": "Białych"
         }
-    def check_for_updates(self):
-        current_timestamp = self.game_state_service.get_file_modify()
 
-        if current_timestamp > self.last_update:
-            self.load_game_state()
+        ui.timer(interval=1.0, callback=self.check_for_updates)
+
+    def check_for_updates(self,):
+        current_state = self.game_state_service.load_game_state(app.storage.user.get('game_state_id'))
+        if not current_state:
+            return
+        if current_state and current_state.get('timestamp', 0) > self.last_update:
+            self.load_game_state(app.storage.user.get('game_state_id'))
             self.update_board()
             self.update_captured_pieces()
-            self.last_update = current_timestamp
+            self.last_update = current_state['timestamp']
 
-    def load_game_state(self):
+    def load_game_state(self, game_state_id):
         """Load the game state from storage"""
-        game_state = self.game_state_service.load_game_state(self.game_state_id)
-
+        game_state = self.game_state_service.load_game_state(game_state_id)
         if not game_state:
-            # If no game state is found, initialize a new board
-            self.board = self.board_class.init_board()
+            app.storage.user.update({'game_state_id': None})
+            users = UserService().load_data()
+            for user in users:
+                if user == app.storage.user.get('user_id'):
+                    user['gameState'] = None
+            UserService().write_data(users)
+            ui.notify('Nie znaleziono stanu gry!', color='red')
+            ui.navigate.to('/')
             return
-
         # Load board state if it exists
-        if game_state.get('board') is None:
-            self.board = self.board_class.init_board()
-        else:
-            # Deserialize the board from the saved state
+        if game_state.get('board'):
             self.board = self.deserialize_board(game_state['board'])
 
-        # Load other game state properties
-        self.white_captured = self.deserialize_pieces(game_state.get('captured_white', []))
-        self.black_captured = self.deserialize_pieces(game_state.get('captured_black', []))
-        self.turn = game_state.get('turn', 'white')
+            # Load other game state properties
+            self.white_captured = self.deserialize_pieces(game_state.get('captured_white', []))
+            self.black_captured = self.deserialize_pieces(game_state.get('captured_black', []))
+            self.turn = game_state.get('turn', 'white')
 
-        # Load last move if it exists
-        if game_state.get('last_move'):
-            piece_data, start_pos, end_pos = game_state['last_move']
-            piece = self.deserialize_piece(piece_data)
-            self.last_move = (piece, start_pos, end_pos)
-        else:
-            self.last_move = None
+            # Load last move if it exists
+            if game_state.get('last_move'):
+                piece_data, start_pos, end_pos = game_state['last_move']
+                piece = self.deserialize_piece(piece_data)
+                self.last_move = (piece, start_pos, end_pos)
+            else:
+                self.last_move = None
 
     def save_game_state(self):
         """Save the current game state to storage"""
-        if not self.game_state_id:
+        if not app.storage.user.get('game_state_id'):
             return
 
         game_state = {
@@ -103,6 +106,7 @@ class Chess:
             'captured_white': self.serialize_pieces(self.white_captured),
             'captured_black': self.serialize_pieces(self.black_captured),
             'turn': self.turn,
+            'timestamp': time.time()
         }
 
         # Save last move if it exists
@@ -112,7 +116,7 @@ class Chess:
         else:
             game_state['last_move'] = None
 
-        self.game_state_service.save_game_state(self.game_state_id, game_state)
+        self.game_state_service.save_game_state(app.storage.user.get('game_state_id'), game_state)
 
     def serialize_board(self):
         """Convert the board to a serializable format"""
@@ -178,7 +182,7 @@ class Chess:
         if not piece_class:
             return None
         if isinstance(piece_class, Pawn):
-            piece = piece_class(piece_data['color'], piece_data['x'], piece_data['y'])
+            piece = piece_class(piece_data['color'], piece_data['x'], piece_data['y'], piece_data['has_moved'])
         else:
             piece = piece_class(piece_data['color'], piece_data['x'], piece_data['y'])
 
@@ -195,6 +199,14 @@ class Chess:
         return [self.deserialize_piece(piece_data) for piece_data in pieces_data]
 
     def create_chessboard(self):
+        if app.storage.user.get('game_state_id') is None:
+            room_dialog = ui.dialog().classes('w-full')
+            with room_dialog, ui.card():
+                ui.label('Brak aktywnego pokoju gry').classes('text-center text-xl font-bold')
+                ui.label('Utwórz nowy pokój poprzez menu aplikacji').classes('text-center')
+                ui.button('Zamknij', on_click=lambda: room_dialog.close())
+            room_dialog.open()
+
         self.grid = ui.grid(columns=8).classes('w-auto m-auto gap-0')
 
         # Create chessboard
@@ -219,19 +231,20 @@ class Chess:
                             f'position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};')
 
                         self.squares[i][j] = square
-                        piece = self.board[i][j]
-                        if piece:
-                            piece_type = piece.__class__.__name__.lower()
-                            piece_color = piece.color
-                            # Updated image path to match your directory structure
-                            image_path = f'./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png'
+                        if app.storage.user.get('game_state_id') is not None:
+                            piece = self.board[i][j]
+                            if piece:
+                                piece_type = piece.__class__.__name__.lower()
+                                piece_color = piece.color
+                                # Updated image path to match your directory structure
+                                image_path = f'./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png'
 
-                            # Make the chess pieces interactive
-                            with square:
-                                ui.image(image_path).style('pointer-events: none;')
-                                # Allow clicks on the piece image
-                                if isinstance(piece, King):
-                                    self.add_king_context_menu(square, piece)
+                                # Make the chess pieces interactive
+                                with square:
+                                    ui.image(image_path).style('pointer-events: none;')
+                                    # Allow clicks on the piece image
+                                    if isinstance(piece, King):
+                                        self.add_king_context_menu(square, piece)
         self.update_captured_pieces()
 
     def handle_square_click(self, i, j):
@@ -318,7 +331,7 @@ class Chess:
         # Perform the move
         self.board[start_row][start_col] = None
         if isinstance(piece, Pawn):
-            piece.move_piece(end_row, end_col, self.board, self)
+            piece.move_piece(end_row, end_col, self)
         else:
             piece.move_piece(end_row, end_col)
         self.board[end_row][end_col] = piece

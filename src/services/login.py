@@ -5,7 +5,6 @@ from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from src.services.user_service import UserService
 from src.services.registration import Registration
-from src.services.game_state import GameStateService
 
 from nicegui import app, ui
 
@@ -27,7 +26,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
 @ui.page('/register')
 def register() -> None:
-    reg = Registration()
+    Registration()
 
 
 @ui.page('/login')
@@ -38,15 +37,7 @@ def login(redirect_to: str = '/') -> Optional[RedirectResponse]:
         for user in users:
             # Check if the provided username and password match a user
             if user['username'] == username.value and user['password'] == password.value:
-                # Check if user has a game state
-                game_state_id = user.get('gameState')
-                if not game_state_id:
-                    # Create a new game state if none exists
-                    game_state_service = GameStateService()
-                    game_state_id = game_state_service.create_new_game_state()
-                    game_state_service.update_user_game_state(user['id'], game_state_id)
-
-                # Mark user as authenticated and store game state ID
+                game_state_id = user['gameState']
                 app.storage.user.update({
                     'username': username.value,
                     'user_id': user['id'],
