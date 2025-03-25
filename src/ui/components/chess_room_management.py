@@ -11,6 +11,12 @@ class ChessRoomManagement:
 
     def check_for_updates(self):
         current_state = self.game_state_service.load_game_state(app.storage.user.get('game_state_id'))
+        if not current_state and app.storage.user.get('game_state_id'):
+            app.storage.user.update({'game_state_id': None, 'color': None})
+            self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), None, None)
+            ui.notify('Nie znaleziono stanu gry!', color='red')
+            ui.navigate.to('/')
+            return
         if not current_state:
             return
         if current_state and current_state.get('timestamp', 0) > self.chess.last_update:
@@ -22,13 +28,10 @@ class ChessRoomManagement:
     def load_game_state(self, game_state_id):
         """Load the game state from storage"""
         game_state = self.game_state_service.load_game_state(game_state_id)
-        if not game_state:
-            app.storage.user.update({'game_state_id': None})
-            users = UserService().load_data()
-            for user in users:
-                if user == app.storage.user.get('user_id'):
-                    user['gameState'] = None
-            UserService().write_data(users)
+
+        if not game_state and app.storage.user.get('game_state_id'):
+            app.storage.user.update({'game_state_id': None, 'color': None})
+            self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), None, None)
             ui.notify('Nie znaleziono stanu gry!', color='red')
             ui.navigate.to('/')
             return
@@ -48,6 +51,17 @@ class ChessRoomManagement:
                 self.chess.last_move = (piece, start_pos, end_pos)
             else:
                 self.chess.last_move = None
+    def get_users(self, game_state_id):
+        users = self.game_state_service.load_game_state(game_state_id)
+        return users['users']
+
+
+    def get_user_color(self, user_id):
+        users = self.game_state_service.load_game_state(app.storage.user.get('game_state_id'))
+        for user in users['users']:
+            if user['id'] == user_id:
+                return user['color']
+        return None
 
     def save_game_state(self):
         """Save the current game state to storage"""
@@ -55,6 +69,7 @@ class ChessRoomManagement:
             return
 
         game_state = {
+            'users': self.get_users(app.storage.user.get('game_state_id')),
             'board': self.serialize_board(),
             'captured_white': self.serialize_pieces(self.chess.white_captured),
             'captured_black': self.serialize_pieces(self.chess.black_captured),

@@ -130,6 +130,10 @@ class Chess:
         piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__)
         turn_pl = self.TURN_PL.get(self.turn, self.turn)
 
+        if app.storage.user.get('color') != self.turn:
+            ui.notify('Nie twoja kolej!', color='red')
+            return
+
         # Check if the move is available
         if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
             ui.notify('Nieprawidłowy ruch!', color='red')

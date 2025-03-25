@@ -38,11 +38,13 @@ def login(redirect_to: str = '/') -> Optional[RedirectResponse]:
             # Check if the provided username and password match a user
             if user['username'] == username.value and user['password'] == password.value:
                 game_state_id = user['gameState']
+                color = user['color']
                 app.storage.user.update({
                     'username': username.value,
                     'user_id': user['id'],
                     'authenticated': True,
-                    'game_state_id': game_state_id
+                    'game_state_id': game_state_id,
+                    'color': color
                 })
                 ui.navigate.to(redirect_to)
                 return

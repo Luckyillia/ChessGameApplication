@@ -38,9 +38,11 @@ class GameStateService:
             if 'users' not in game_states[game_state_id]:
                 game_states[game_state_id]['users'] = []
 
-            if user_id not in game_states[game_state_id]['users']:
+            if user_id not in game_states[game_state_id]['users'] and len(game_states[game_state_id]['users']) < 2:
                 game_states[game_state_id]['users'].append(user_id)
                 self.save_game_state(game_state_id, game_states[game_state_id])
+                return True
+            return False
 
         except Exception as e:
             print(f"Error adding user: {e}")
@@ -114,7 +116,7 @@ class GameStateService:
         }
         self.save_game_state(game_state_id, empty_state)
         return game_state_id
-    def update_user_game_state(self, user_id, game_state_id):
+    def update_user_game_state(self, user_id, game_state_id, color):
         """Update a user's game state ID in the user data"""
         from src.services.user_service import UserService
         user_service = UserService()
@@ -123,6 +125,7 @@ class GameStateService:
         for user in users:
             if user['id'] == user_id:
                 user['gameState'] = game_state_id
+                user['color'] = color
                 user_service.write_data(users)
                 return True
 

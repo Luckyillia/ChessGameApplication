@@ -79,8 +79,8 @@ class UserUI:
     def create_new_room(self):
         if not app.storage.user.get('game_state_id'):
             game_state_id = self.game_state_service.create_new_game_state(app.storage.user.get('user_id'))
-            self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), game_state_id)
-            app.storage.user.update({'game_state_id': game_state_id})
+            self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), game_state_id , 'white')
+            app.storage.user.update({'game_state_id': game_state_id, 'color': 'white'})
             self.chess.board = ChessBoard().init_board()
             self.chess.update_board()
             self.chess.chess_room_management.save_game_state()
@@ -92,12 +92,8 @@ class UserUI:
 
     def exit_room(self):
         game_state_id = app.storage.user.get('game_state_id')
-        app.storage.user.update({'game_state_id': None})
-        users = self.user_service.load_data()
-        for user in users:
-            if user == app.storage.user.get('user_id'):
-                user['gameState'] = None
-        self.user_service.write_data(users)
+        app.storage.user.update({'game_state_id': None, 'color': None})
+        self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), None, None)
         self.game_state_service.delete_game_state(game_state_id)
         ui.notify('You have exited the room')
         ui.navigate.to('/')
@@ -125,11 +121,11 @@ class UserUI:
                 raise ValueError('Pokój nie istnieje')
 
             # Aktualizacja stanu użytkownika
-            self.game_state_service.add_user_to_game_state(
-                room_code,
-                app.storage.user.get('user_id')
-            )
-            app.storage.user.update({'game_state_id': room_code})
+            if not self.game_state_service.add_user_to_game_state(room_code,app.storage.user.get('user_id')):
+                raise ValueError('Pokój jest przepelniony')
+            app.storage.user.update({'game_state_id': room_code, 'color': 'black'})
+
+            self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), room_code, 'black')
 
             # Inicjalizacja szachów
             self.chess.chess_room_management.load_game_state(room_code)
