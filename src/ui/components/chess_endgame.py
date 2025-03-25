@@ -5,7 +5,7 @@ from src.ui.components.chess_board import *
 class ChessEndgame:
     def __init__(self, chess):
         self.chess = chess
-        self.chess_board = ChessBoard(self.chess)
+        self.chess_board = ChessBoard()
         self.move_count_since_last_capture_or_pawn_move = 0  # Counter for the 50-move rule
 
     def isCheck(self, color):

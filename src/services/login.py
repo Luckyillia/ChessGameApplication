@@ -26,7 +26,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
 @ui.page('/register')
 def register() -> None:
-    reg = Registration()
+    Registration()
 
 
 @ui.page('/login')
@@ -37,8 +37,15 @@ def login(redirect_to: str = '/') -> Optional[RedirectResponse]:
         for user in users:
             # Check if the provided username and password match a user
             if user['username'] == username.value and user['password'] == password.value:
-                # Mark user as authenticated and navigate to the requested page
-                app.storage.user.update({'username': username.value, 'authenticated': True})
+                game_state_id = user['gameState']
+                color = user['color']
+                app.storage.user.update({
+                    'username': username.value,
+                    'user_id': user['id'],
+                    'authenticated': True,
+                    'game_state_id': game_state_id,
+                    'color': color
+                })
                 ui.navigate.to(redirect_to)
                 return
         # Notify user if the login failed

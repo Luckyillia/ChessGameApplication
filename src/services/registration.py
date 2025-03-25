@@ -42,7 +42,7 @@ class Registration:
 
     def add_user(self, redirect_to: str = '/'):
         # Check if all required fields are filled
-        if self.name_input.value and self.surname_input.value and self.pesel_input.value:
+        if self.name_input.value and self.surname_input.value and self.pesel_input.value and self.username_input.value and self.password_input.value:
             # Validate the PESEL input (should be 11 digits)
             if len(self.pesel_input.value) == 11 and self.pesel_input.value.isdigit():
                 # Add the user using the user service
