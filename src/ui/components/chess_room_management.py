@@ -55,6 +55,10 @@ class ChessRoomManagement:
         users = self.game_state_service.load_game_state(game_state_id)
         return users['users']
 
+    def get_visitor(self, game_state_id):
+        users = self.game_state_service.load_game_state(game_state_id)
+        return users['visitors']
+
 
     def get_user_color(self, user_id):
         users = self.game_state_service.load_game_state(app.storage.user.get('game_state_id'))
@@ -70,6 +74,7 @@ class ChessRoomManagement:
 
         game_state = {
             'users': self.get_users(app.storage.user.get('game_state_id')),
+            'visitors': self.get_visitor(app.storage.user.get('game_state_id')),
             'board': self.serialize_board(),
             'captured_white': self.serialize_pieces(self.chess.white_captured),
             'captured_black': self.serialize_pieces(self.chess.black_captured),

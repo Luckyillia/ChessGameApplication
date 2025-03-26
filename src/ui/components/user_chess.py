@@ -105,6 +105,10 @@ class Chess:
         # [Existing code remains the same]
         piece = self.board[i][j]
         piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__) if piece else None
+        if app.storage.user.get('color') is None and app.storage.user.get('game_state_id') is not None:
+            ui.notify('Jestes widzem', color='red')
+            return
+
         if self.start_pos is None:
             if piece and self.turn == piece.color:
                 self.start_pos = (i, j)
