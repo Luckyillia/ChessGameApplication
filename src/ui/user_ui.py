@@ -29,6 +29,8 @@ class UserUI:
         with self.room_dialog, ui.card():
             self.room_code_label = ui.label().classes('text-xl font-bold')
             ui.button("Zamknij", on_click=self.room_dialog.close).classes('m-2')
+            ui.button('Skopiuj do schowka', on_click=lambda: [ui.clipboard.write(app.storage.user.get('game_state_id')),
+                                                                   ui.notify('Skopiowano do schowku', color='positive', icon='inventory')])
 
         self.join_dialog = ui.dialog().classes('w-full')
         with self.join_dialog, ui.card():
@@ -36,6 +38,7 @@ class UserUI:
             self.room_code_input = ui.input(label='Kod pokoju').classes('w-full')
             with ui.row().classes('w-full justify-end'):
                 ui.button('Anuluj', on_click=self.join_dialog.close).classes('m-2')
+                ui.button('Wklej', on_click=self.handle_paste).classes('m-2')
                 ui.button('Dołącz', on_click=self.handle_join).classes('m-2')
             ui.button('Dołącz jako widz', on_click=self.visitor_join).classes('m-2')
 
@@ -68,6 +71,11 @@ class UserUI:
 
             with ui.tab_panel(three):
                 self.chess = Chess(self.menu)
+
+    async def handle_paste(self):
+        code = await ui.clipboard.read()
+        self.room_code_input.set_value(code)
+        ui.notify('Wklejono ze schowka', color='positive', icon='content_paste')
 
     def switch(self, event):
         # Toggle dark mode based on switch

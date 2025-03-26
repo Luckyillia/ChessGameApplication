@@ -197,6 +197,7 @@ class GameStateService:
             for user in users:
                 if user['id'] == user_id:
                     user['gameState'] = game_state_id
+                    user['color'] = color
                     user_service.write_data(users)
                     return True
 
