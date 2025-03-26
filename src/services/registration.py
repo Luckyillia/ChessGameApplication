@@ -46,14 +46,9 @@ class Registration:
             # Validate the PESEL input (should be 11 digits)
             if len(self.pesel_input.value) == 11 and self.pesel_input.value.isdigit():
                 # Add the user using the user service
-                self.user_service.add_user(
-                    self.name_input.value,
-                    self.surname_input.value,
-                    self.username_input.value,
-                    self.password_input.value,
-                    self.pesel_input.value,
-                    self.avatar_url
-                )
+                if not self.user_service.add_user(self.name_input.value,self.surname_input.value,self.username_input.value,self.password_input.value,self.pesel_input.value,self.avatar_url):
+                    ui.notify('Taki uzytkownik juz istnieje', color='red')
+                    return
 
                 # Clear input fields after user is added
                 self.name_input.value = ''
