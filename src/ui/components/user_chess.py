@@ -10,7 +10,7 @@ from src.ui.components.chess_room_management import ChessRoomManagement
 
 
 class Chess:
-    def __init__(self):
+    def __init__(self, menu):
         # Initialize board size and set the initial state
         self.board_row = 8
         self.board_col = 8
@@ -21,6 +21,7 @@ class Chess:
         self.handling_castling = ChessCastling(self)
         self.chess_room_management = ChessRoomManagement(self)
 
+        self.menu = menu
         self.start_pos = None
         self.turn = 'white'
         self.grid = None
@@ -56,9 +57,9 @@ class Chess:
         if app.storage.user.get('game_state_id') is None:
             room_dialog = ui.dialog().classes('w-full')
             with room_dialog, ui.card():
-                ui.label('Brak aktywnego pokoju gry').classes('text-center text-xl font-bold')
-                ui.label('Utwórz nowy pokój poprzez menu aplikacji').classes('text-center')
-                ui.button('Zamknij', on_click=lambda: room_dialog.close())
+                ui.label('Nie jestes w aktywnym pokoju').classes('text-center text-xl font-bold')
+                ui.label('Dolacz do aktywnego pokoju lub stworz').classes('text-center')
+                ui.button('Zamknij', on_click=lambda: [self.menu.open(), room_dialog.close()])
             room_dialog.open()
 
         self.grid = ui.grid(columns=8).classes('w-auto m-auto gap-0')
@@ -213,8 +214,6 @@ class Chess:
                 piece_name = self.PIECE_NAMES_PL["King"]  # Get the name for "King"
                 turn_name = self.TURN_PL[self.turn]  # Get the name for the turn ("Białych" or "Czarnych")
                 ui.notify(f'{turn_name} {piece_name} jest w szachu!', color='red')
-
-
         else:
             # Check for stalemate
             if self.end_game_class.isStalemate(self.turn):

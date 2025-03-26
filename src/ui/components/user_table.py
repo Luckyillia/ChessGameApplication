@@ -10,7 +10,7 @@ class UserTable:
         self.columns = [
             {'name': 'name', 'label': 'Imię', 'field': 'name', 'align': 'center'},
             {'name': 'surname', 'label': 'Nazwisko', 'field': 'surname', 'align': 'center'},
-            {'name': 'username', 'label': 'Username', 'field': 'username', 'align': 'center'},
+            {'name': 'username', 'label': 'Nazwa uzytkownika', 'field': 'username', 'align': 'center'},
             {'name': 'password', 'label': 'Haslo', 'field': 'password', 'align': 'center'},
             {'name': 'pesel', 'label': 'PESEL', 'field': 'pesel', 'align': 'center'},
             {'name': 'avatar', 'label': 'Avatar', 'field': 'avatar', 'align': 'center'},

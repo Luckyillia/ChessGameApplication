@@ -15,6 +15,7 @@ class UserUI:
         self.user_service = UserService()
         self.game_state_service = GameStateService()
         self.user_table = UserTable(self.user_service)
+        self.menu = None
         self.setup_ui()
 
     def setup_ui(self):
@@ -28,6 +29,8 @@ class UserUI:
         with self.room_dialog, ui.card():
             self.room_code_label = ui.label().classes('text-xl font-bold')
             ui.button("Zamknij", on_click=self.room_dialog.close).classes('m-2')
+            ui.button('Skopiuj do schowka', on_click=lambda: [ui.clipboard.write(app.storage.user.get('game_state_id')),
+                                                                   ui.notify('Skopiowano do schowku', color='positive', icon='inventory')])
 
         self.join_dialog = ui.dialog().classes('w-full')
         with self.join_dialog, ui.card():
@@ -35,6 +38,7 @@ class UserUI:
             self.room_code_input = ui.input(label='Kod pokoju').classes('w-full')
             with ui.row().classes('w-full justify-end'):
                 ui.button('Anuluj', on_click=self.join_dialog.close).classes('m-2')
+                ui.button('Wklej', on_click=self.handle_paste).classes('m-2')
                 ui.button('Dołącz', on_click=self.handle_join).classes('m-2')
             ui.button('Dołącz jako widz', on_click=self.visitor_join).classes('m-2')
 
@@ -46,13 +50,13 @@ class UserUI:
                 'text-xl font-semibold text-primary text-center')
             ui.button(on_click=self.logout, icon='logout').props('outline round')
             with ui.button(icon='menu').props('outline round'):
-                with ui.menu() as menu:
-                    ui.menu_item('Utwórz nowy pokój', lambda: (self.create_new_room(), menu.close()))
-                    ui.menu_item('Wyjdź z pokoju', lambda: (self.exit_room(), menu.close()))
-                    ui.menu_item('Dołącz do pokoju', lambda: (self.join_room(), menu.close()))
-                    ui.menu_item('Sprawdz kod pokoju', lambda: (self.check_room_id(), menu.close()))
+                with ui.menu() as self.menu:
+                    ui.menu_item('Utwórz nowy pokój', lambda: (self.create_new_room(), self.menu.close()))
+                    ui.menu_item('Wyjdź z pokoju', lambda: (self.exit_room(), self.menu.close()))
+                    ui.menu_item('Dołącz do pokoju', lambda: (self.join_room(), self.menu.close()))
+                    ui.menu_item('Sprawdz kod pokoju', lambda: (self.check_room_id(), self.menu.close()))
                     ui.separator()
-                    ui.menu_item('Close', menu.close)
+                    ui.menu_item('Close', self.menu.close)
 
         # Define content for each tab
         with ui.tab_panels(tabs, value=one).classes('w-full flex justify-center items-center'):
@@ -60,10 +64,18 @@ class UserUI:
                 reg = Registration(self.user_table)
 
             with ui.tab_panel(two):
-                self.user_table.init_table()
+                if app.storage.user.get('username') == 'lucky_illia' or app.storage.user.get('username') == 'Yojson':
+                    self.user_table.init_table()
+                else:
+                    ui.notify('Nie masz uprawnien', color='red')
 
             with ui.tab_panel(three):
-                self.chess = Chess()
+                self.chess = Chess(self.menu)
+
+    async def handle_paste(self):
+        code = await ui.clipboard.read()
+        self.room_code_input.set_value(code)
+        ui.notify('Wklejono ze schowka', color='positive', icon='content_paste')
 
     def switch(self, event):
         # Toggle dark mode based on switch
@@ -82,16 +94,19 @@ class UserUI:
             game_state_id = self.game_state_service.create_new_game_state(app.storage.user.get('user_id'))
             self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), game_state_id , 'white')
             app.storage.user.update({'game_state_id': game_state_id, 'color': 'white'})
-            self.chess.board = ChessBoard().init_board()
+            self.chess.board = ChessBoard().init_stalemate()
             self.chess.update_board()
             self.chess.chess_room_management.save_game_state()
             self.room_code_label.text = f'Kod pokoju: {game_state_id}'
             ui.update()  # Wymuś aktualizację interfejsu
             self.room_dialog.open()
         else:
-            ui.notify('You are already in a room')
+            ui.notify('Juz jestes w pokoju!', type='warning')
 
     def exit_room(self):
+        if not app.storage.user.get('game_state_id'):
+            ui.notify('Nie jestes w zadnym pokoju!', type='warning')
+            return
         game_state_id = app.storage.user.get('game_state_id')
         color = app.storage.user.get('color')
         if color is None and game_state_id is not None:
@@ -102,7 +117,7 @@ class UserUI:
             app.storage.user.update({'game_state_id': None, 'color': None})
             self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), None, None)
             self.game_state_service.delete_game_state(game_state_id)
-        ui.notify('You have exited the room')
+        ui.notify('Wyszedles z pokoju!', type='positive')
         ui.navigate.to('/')
      
 

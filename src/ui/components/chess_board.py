@@ -130,3 +130,14 @@ class ChessBoard:
             [None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None],
         ]
+    def init_king_vs_king(self):
+        return [
+            [King('black', 0, 0), None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, King('white', 6, 6), None],
+            [None, None, None, None, None, Queen('black', 7, 5), None, None],
+        ]

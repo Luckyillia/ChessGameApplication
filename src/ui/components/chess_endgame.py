@@ -1,11 +1,14 @@
 from src.ui.components.chess_pieces import *
 from src.ui.components.chess_board import *
-
+from nicegui import ui, app
+from src.services.game_state import GameStateService
+from src.ui.components.chess_room_management import ChessRoomManagement
 
 class ChessEndgame:
     def __init__(self, chess):
         self.chess = chess
         self.chess_board = ChessBoard()
+        self.chess_room_management = ChessRoomManagement(self.chess)
         self.move_count_since_last_capture_or_pawn_move = 0  # Counter for the 50-move rule
 
     def isCheck(self, color):
@@ -171,14 +174,15 @@ class ChessEndgame:
 
     def end(self, color=None):
         def restart_game():
-            self.chess.board = self.chess_board.init_board()
-            self.chess.turn = 'white'
+            game_state_id = app.storage.user.get('game_state_id')
             self.chess.last_move = None
             self.chess.white_captured = []
             self.chess.black_captured = []
             self.move_count_since_last_capture_or_pawn_move = 0
-            self.chess.update_captured_pieces()
+            GameStateService().restart_game_state(game_state_id, self.chess_room_management)
+            self.chess.board = ChessBoard().init_board()
             self.chess.update_board()
+            self.chess_room_management.save_game_state()
             dialog.close()
 
         with ui.dialog() as dialog, ui.card().classes('p-4'):
@@ -188,10 +192,10 @@ class ChessEndgame:
                 ui.label('Draw').classes('text-xl font-bold text-center w-full')
 
             with ui.row().classes('justify-center w-full'):
-                ui.button('Restart Game', on_click=restart_game).classes(
+                ui.button('Restartuj Gre', on_click=restart_game).classes(
                     'bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500'
                 )
-                ui.button('View Board', on_click=dialog.close).classes(
+                ui.button('Zobacz plansze', on_click=dialog.close).classes(
                     'bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500'
                 )
 

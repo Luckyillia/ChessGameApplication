@@ -3,7 +3,6 @@ import os
 import uuid
 import time
 
-
 class GameStateService:
     def __init__(self, file_name='data/game_state.json'):
         self.file_name = file_name
@@ -157,6 +156,31 @@ class GameStateService:
         }
         self.save_game_state(game_state_id, empty_state)
         return game_state_id
+
+    def restart_game_state(self, game_state_id ,chess_room_management):
+        """Restart a game state by its ID"""
+        try:
+            with open(self.file_name, 'r', encoding='utf-8') as file:
+                try:
+                    game_states = json.load(file)
+                except json.JSONDecodeError:
+                    game_states = {}
+            game_states[game_state_id] = {
+                "users": chess_room_management.get_users(game_state_id),
+                "visitors": chess_room_management.get_visitor(game_state_id),
+                "board": None,
+                "captured_white": [],
+                "captured_black": [],
+                "turn": "white",
+                "last_move": None,
+                "timestamp": time.time()
+            }
+            self.save_game_state(game_state_id, game_states[game_state_id])
+            return True
+        except Exception as e:
+            print(f'Error restarting game state: {e}')
+            raise
+
     def update_user_game_state(self, user_id, game_state_id, color):
         """Update a user's game state ID in the user data"""
         from src.services.user_service import UserService
@@ -173,6 +197,7 @@ class GameStateService:
             for user in users:
                 if user['id'] == user_id:
                     user['gameState'] = game_state_id
+                    user['color'] = color
                     user_service.write_data(users)
                     return True
 

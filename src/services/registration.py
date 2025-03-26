@@ -15,8 +15,8 @@ class Registration:
         # Initialize input fields and their UI components
         self.name_input = ui.input('Imię').classes('m-auto w-64')
         self.surname_input = ui.input('Nazwisko').classes('m-auto w-64')
-        self.username_input = ui.input('Username').classes('m-auto w-64')
-        self.password_input = ui.input('Password', password=True, password_toggle_button=True).classes('m-auto w-64')
+        self.username_input = ui.input('Nazwa uzytkownika').classes('m-auto w-64')
+        self.password_input = ui.input('Haslo', password=True, password_toggle_button=True).classes('m-auto w-64')
         self.pesel_input = ui.input("PESEL").classes('m-auto w-64')
 
         # Initialize avatar image UI
@@ -46,14 +46,9 @@ class Registration:
             # Validate the PESEL input (should be 11 digits)
             if len(self.pesel_input.value) == 11 and self.pesel_input.value.isdigit():
                 # Add the user using the user service
-                self.user_service.add_user(
-                    self.name_input.value,
-                    self.surname_input.value,
-                    self.username_input.value,
-                    self.password_input.value,
-                    self.pesel_input.value,
-                    self.avatar_url
-                )
+                if not self.user_service.add_user(self.name_input.value,self.surname_input.value,self.username_input.value,self.password_input.value,self.pesel_input.value,self.avatar_url):
+                    ui.notify('Taki uzytkownik juz istnieje', color='red')
+                    return
 
                 # Clear input fields after user is added
                 self.name_input.value = ''
