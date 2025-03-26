@@ -43,9 +43,28 @@ class GameStateService:
                 self.save_game_state(game_state_id, game_states[game_state_id])
                 return True
             return False
-
         except Exception as e:
             print(f"Error adding user: {e}")
+            raise
+
+    def add_visitor_to_game_state(self, game_state_id: str, user_id: str):
+        try:
+            with open(self.file_name, 'r', encoding='utf-8') as file:
+                game_states = json.load(file)
+
+            if game_state_id not in game_states:
+                raise ValueError("Game state does not exist")
+
+            if 'visitors' not in game_states[game_state_id]:
+                game_states[game_state_id]['visitors'] = []
+
+            if user_id not in game_states[game_state_id]['visitors']:
+                game_states[game_state_id]['visitors'].append(user_id)
+                self.save_game_state(game_state_id, game_states[game_state_id])
+                return True
+            return False
+        except Exception as e:
+            print(f"Error adding visitor: {e}")
             raise
 
     def load_game_state(self, game_state_id):
@@ -57,6 +76,27 @@ class GameStateService:
         except (json.JSONDecodeError, FileNotFoundError):
             print(f"❌ Error: Could not load game state with ID {game_state_id}")
             return None
+
+    def delete_visitor_id(self, game_state_id, user_id):
+        try:
+            with open(self.file_name, 'r', encoding='utf-8') as file:
+                game_states = json.load(file)
+
+            if game_state_id not in game_states:
+                raise ValueError("Game state does not exist")
+
+            if 'visitors' not in game_states[game_state_id]:
+                game_states[game_state_id]['visitors'] = []
+
+            if user_id in game_states[game_state_id]['visitors']:
+                game_states[game_state_id]['visitors'].remove(user_id)
+                self.save_game_state(game_state_id, game_states[game_state_id])
+                return True
+            return False
+        except Exception as e:
+            print(f"Error deleting visitor: {e}")
+            raise
+
 
     def save_game_state(self, game_state_id, state_data):
         """Save game state data for a specific ID"""
@@ -106,7 +146,8 @@ class GameStateService:
     def create_new_game_state(self, user_id):
         game_state_id = str(uuid.uuid4())
         empty_state = {
-            "users": [user_id],  # Dodaj tworzącego do listy
+            "users": [user_id],
+            "visitors": [],
             "board": None,
             "captured_white": [],
             "captured_black": [],
@@ -121,13 +162,20 @@ class GameStateService:
         from src.services.user_service import UserService
         user_service = UserService()
         users = user_service.load_data()
+        if color:
+            for user in users:
+                if user['id'] == user_id:
+                    user['gameState'] = game_state_id
+                    user['color'] = color
+                    user_service.write_data(users)
+                    return True
+        else:
+            for user in users:
+                if user['id'] == user_id:
+                    user['gameState'] = game_state_id
+                    user_service.write_data(users)
+                    return True
 
-        for user in users:
-            if user['id'] == user_id:
-                user['gameState'] = game_state_id
-                user['color'] = color
-                user_service.write_data(users)
-                return True
 
         return False
 
