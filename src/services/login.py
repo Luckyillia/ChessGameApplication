@@ -49,7 +49,7 @@ def login(redirect_to: str = '/') -> Optional[RedirectResponse]:
                 ui.navigate.to(redirect_to)
                 return
         # Notify user if the login failed
-        ui.notify('Wrong username or password', color='negative')
+        ui.notify('Zla nazwa uzytkownika lub haslo', color='negative')
 
     # If the user is already authenticated, redirect to the home page
     if app.storage.user.get('authenticated', False):
@@ -57,9 +57,9 @@ def login(redirect_to: str = '/') -> Optional[RedirectResponse]:
 
     # Render the login page
     with ui.card().classes('absolute-center'):
-        username = ui.input('Username').on('keydown.enter', try_login)
-        password = ui.input('Password', password=True, password_toggle_button=True).on('keydown.enter', try_login)
-        ui.button('Log in', on_click=try_login)
-        ui.button('Register', on_click=lambda: ui.navigate.to('/register'))
+        username = ui.input('Nazwa uzytkownika').on('keydown.enter', try_login)
+        password = ui.input('Haslo', password=True, password_toggle_button=True).on('keydown.enter', try_login)
+        ui.button('Zaloguj', on_click=try_login)
+        ui.button('Rejestruj', on_click=lambda: ui.navigate.to('/register'))
 
     return None

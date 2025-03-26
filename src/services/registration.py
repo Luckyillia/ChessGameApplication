@@ -15,8 +15,8 @@ class Registration:
         # Initialize input fields and their UI components
         self.name_input = ui.input('Imię').classes('m-auto w-64')
         self.surname_input = ui.input('Nazwisko').classes('m-auto w-64')
-        self.username_input = ui.input('Username').classes('m-auto w-64')
-        self.password_input = ui.input('Password', password=True, password_toggle_button=True).classes('m-auto w-64')
+        self.username_input = ui.input('Nazwa uzytkownika').classes('m-auto w-64')
+        self.password_input = ui.input('Haslo', password=True, password_toggle_button=True).classes('m-auto w-64')
         self.pesel_input = ui.input("PESEL").classes('m-auto w-64')
 
         # Initialize avatar image UI
