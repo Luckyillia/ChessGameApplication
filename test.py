@@ -1,204 +1,307 @@
-from nicegui import events,ui
-import string
-import random
-import json
-import os
+"""CONVENTIONS:
+positions are done row-column from the bottom left and are both numbers. This corresponds to the alpha-number system in traditional chess while being computationally useful. they are specified as tuples
+"""
+import itertools
 
-file_name = 'data.json'
-avatar_url = ""
-
-def load_data():
-    if not os.path.exists(file_name):
-        return []
-    try:
-        with open(file_name, 'r', encoding='utf-8') as file:
-            return json.load(file).get("users", [])
-    except (json.JSONDecodeError, FileNotFoundError):
-        print("❌ Błąd: Nie można wczytać danych z pliku JSON.")
-        return []
-
-def write_data(users):
-    try:
-        with open(file_name, "w", encoding="utf-8") as outfile:
-            json.dump({"users": users}, outfile, indent=4, ensure_ascii=False)
-    except Exception as e:
-        print(f"❌ Błąd zapisu do pliku: {e}")
-
-# Generowanie losowego URL do avatara
-def url_generator(size=5, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
-
-def generate_avatar():
-    return f'https://robohash.org/{url_generator(5)}'
-
-def add_user():
-    global avatar_url
-    users = load_data()
-    if name_input.value and surname_input.value and pesel_input.value:
-        if len(pesel_input.value) == 11 and pesel_input.value.isdigit():
-            user_id = str(len(users))  # Generate a simple unique ID based on the number of users
-            users.append({
-                "id": user_id,
-                "name": name_input.value,
-                "surname": surname_input.value,
-                "pesel": pesel_input.value,
-                "avatar": avatar_url
-            })
-            name_input.value = ''
-            surname_input.value = ''
-            pesel_input.value = ''
-            avatar_url = generate_avatar()
-            avatar_image.set_source(avatar_url)
-            write_data(users)
-            update_table()
-        else:
-            ui.notify('PESEL musi zawierać 11 cyfr', color='red')
+WHITE = "white"
+BLACK = "black"
 
 
-def del_user(e: events.GenericEventArguments) -> None:
-    print(f"🔹 Otrzymane argumenty: {e}")  # Debugowanie
-    # Checking if event.args is a dictionary and retrieving user ID
-    user_id = e.args.get('id') if isinstance(e.args, dict) else None
-    if not user_id:
-        print("❌ Błąd: ID użytkownika nie zostało przekazane!")
-        ui.notify("❌ Błąd: ID użytkownika nie zostało przekazane!", color="red")  # Notify user of error
-        return
+class Game:
+    # ive decided since the number of pieces is capped but the type of pieces is not (pawn transformations), I've already coded much of the modularity to support just using a dictionary of pieces
+    def __init__(self):
+        self.playersturn = BLACK
+        self.message = "this is where prompts will go"
+        self.gameboard = {}
+        self.placePieces()
+        print("chess program. enter moves in algebraic notation separated by space")
+        self.main()
 
-    # Load user data and filter out the user with the provided ID
-    users = load_data()
-    updated_users = [user for user in users if user['id'] != user_id]  # Remove user with matching ID
-    if len(updated_users) == len(users):
-        print("❌ Błąd: Użytkownik nie został znaleziony!")
-        ui.notify("❌ Błąd: Użytkownik nie został znaleziony!", color="red")
-        return
+    def placePieces(self):
 
-    write_data(updated_users)  # Save the updated list of users
-    update_table()  # Refresh the UI or data table
-    ui.notify("✅ Użytkownik usunięty!", color="green")  # Success notification
+        for i in range(0, 8):
+            self.gameboard[(i, 1)] = Pawn(WHITE, uniDict[WHITE][Pawn], 1)
+            self.gameboard[(i, 6)] = Pawn(BLACK, uniDict[BLACK][Pawn], -1)
 
-def edit_user(e: events.GenericEventArguments):
-    """Obsługuje edycję użytkownika i zapisuje zmiany do pliku."""
-    print(f"🔹 Otrzymane argumenty: {e}")
+        placers = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
 
-    user_data = e.args.copy()  # Tworzymy kopię danych, aby nie modyfikować oryginalnych
-    user_id = user_data.pop('id', None)  # Pobieramy ID i usuwamy je z danych
-    user_data.pop('editing', None)  # Usuwamy pole 'editing', jeśli istnieje
+        for i in range(0, 8):
+            self.gameboard[(i, 0)] = placers[i](WHITE, uniDict[WHITE][placers[i]])
+            self.gameboard[((7 - i), 7)] = placers[i](BLACK, uniDict[BLACK][placers[i]])
+        placers.reverse()
 
-    if not user_id:
-        ui.notify("❌ Błąd: Brak ID użytkownika!", color="red")
-        return
+    def main(self):
 
-    users = load_data()  # Wczytanie listy użytkowników
+        while True:
+            self.printBoard()
+            print(self.message)
+            self.message = ""
+            startpos, endpos = self.parseInput()
+            try:
+                target = self.gameboard[startpos]
+            except:
+                self.message = "could not find piece; index probably out of range"
+                target = None
 
-    for user in users:
-        if user["id"] == user_id:
-            user.update(user_data)  # Aktualizacja danych użytkownika
+            if target:
+                print("found " + str(target))
+                if target.Color != self.playersturn:
+                    self.message = "you aren't allowed to move that piece this turn"
+                    continue
+                if target.isValid(startpos, endpos, target.Color, self.gameboard):
+                    self.message = "that is a valid move"
+                    self.gameboard[endpos] = self.gameboard[startpos]
+                    del self.gameboard[startpos]
+                    self.isCheck()
+                    if self.playersturn == BLACK:
+                        self.playersturn = WHITE
+                    else:
+                        self.playersturn = BLACK
+                else:
+                    self.message = "invalid move" + str(target.availableMoves(startpos[0], startpos[1], self.gameboard))
+                    print(target.availableMoves(startpos[0], startpos[1], self.gameboard))
+            else:
+                self.message = "there is no piece in that space"
 
-            write_data(users)  # Zapis zmian do pliku
-            ui.notify("✅ Zmiany zapisane!", color="green")
-            update_table()  # Odświeżenie tabeli
-            return
+    def isCheck(self):
+        # ascertain where the kings are, check all pieces of opposing color against those kings, then if either get hit, check if its checkmate
+        king = King
+        kingDict = {}
+        pieceDict = {BLACK: [], WHITE: []}
+        for position, piece in self.gameboard.items():
+            if type(piece) == King:
+                kingDict[piece.Color] = position
+            print(piece)
+            pieceDict[piece.Color].append((piece, position))
+        # white
+        if self.canSeeKing(kingDict[WHITE], pieceDict[BLACK]):
+            self.message = "White player is in check"
+        if self.canSeeKing(kingDict[BLACK], pieceDict[WHITE]):
+            self.message = "Black player is in check"
 
-    ui.notify("❌ Błąd: Użytkownik nie znaleziony!", color="red")
+    def canSeeKing(self, kingpos, piecelist):
+        # checks if any pieces in piece list (which is an array of (piece,position) tuples) can see the king in kingpos
+        for piece, position in piecelist:
+            if piece.isValid(position, kingpos, piece.Color, self.gameboard):
+                return True
+
+    def parseInput(self):
+        try:
+            a, b = input().split()
+            a = ((ord(a[0]) - 97), int(a[1]) - 1)
+            b = (ord(b[0]) - 97, int(b[1]) - 1)
+            print(a, b)
+            return (a, b)
+        except:
+            print("error decoding input. please try again")
+            return ((-1, -1), (-1, -1))
+
+    """def validateInput(self, *kargs):
+        for arg in kargs:
+            if type(arg[0]) is not type(1) or type(arg[1]) is not type(1):
+                return False
+        return True"""
+
+    def printBoard(self):
+        print("  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |")
+        for i in range(0, 8):
+            print("-" * 32)
+            print(chr(i + 97), end="|")
+            for j in range(0, 8):
+                item = self.gameboard.get((i, j), " ")
+                print(str(item) + ' |', end=" ")
+            print()
+        print("-" * 32)
+
+    """game class. contains the following members and methods:
+    two arrays of pieces for each player
+    8x8 piece array with references to these pieces
+    a parse function, which turns the input from the user into a list of two tuples denoting start and end points
+    a checkmateExists function which checks if either players are in checkmate
+    a checkExists function which checks if either players are in check (woah, I just got that nonsequitur)
+    a main loop, which takes input, runs it through the parser, asks the piece if the move is valid, and moves the piece if it is. if the move conflicts with another piece, that piece is removed. ischeck(mate) is run, and if there is a checkmate, the game prints a message as to who wins
+    """
 
 
+class Piece:
 
-def update_table():
-    users = load_data()
-    table.rows.clear()
+    def __init__(self, color, name):
+        self.name = name
+        self.position = None
+        self.Color = color
 
-    for user in users:
-        table.rows.append({
-            'name': user["name"],
-            'surname': user["surname"],
-            'pesel': user["pesel"],
-            'avatar': user["avatar"],
-            'id': user['id']
-        })
-    table.update()
+    def isValid(self, startpos, endpos, Color, gameboard):
+        if endpos in self.availableMoves(startpos[0], startpos[1], gameboard, Color=Color):
+            return True
+        return False
 
-def switch(event):
-    print(event)
-    if event.value:
-        ui.dark_mode().enable()
-        print('dark')
-    else:
-        ui.dark_mode().disable()
-        print('white')
+    def __repr__(self):
+        return self.name
 
-def refresh_avatar():
-    global avatar_url
-    avatar_url = generate_avatar()
-    avatar_image.set_source(avatar_url)
+    def __str__(self):
+        return self.name
 
-# UI
-with ui.tabs().classes('w-full') as tabs:
-    one = ui.tab('Dodaj użytkownika')
-    two = ui.tab('Lista użytkowników')
-    three = ui.tab('Szachy')
+    def availableMoves(self, x, y, gameboard):
+        print("ERROR: no movement for base class")
 
-ui.switch('Dark mode', on_change=switch)
+    def AdNauseum(self, x, y, gameboard, Color, intervals):
+        """repeats the given interval until another piece is run into. 
+        if that piece is not of the same color, that square is added and
+         then the list is returned"""
+        answers = []
+        for xint, yint in intervals:
+            xtemp, ytemp = x + xint, y + yint
+            while self.isInBounds(xtemp, ytemp):
+                # print(str((xtemp,ytemp))+"is in bounds")
 
-with ui.tab_panels(tabs, value=one).classes('w-full'):
-    with ui.tab_panel(one):
-        name_input = ui.input('Imię').classes('m-auto')
-        surname_input = ui.input('Nazwisko').classes('m-auto')
-        pesel_input = ui.input("PESEL").classes('m-auto')
-        avatar_url = generate_avatar()
-        avatar_image = ui.image(avatar_url).classes('w-32 h-32').classes('m-auto')
-        ui.button('Generuj nowy avatar', on_click=refresh_avatar).classes('m-auto')
-        ui.button('Dodaj użytkownika', on_click=add_user).classes('m-auto')
+                target = gameboard.get((xtemp, ytemp), None)
+                if target is None:
+                    answers.append((xtemp, ytemp))
+                elif target.Color != Color:
+                    answers.append((xtemp, ytemp))
+                    break
+                else:
+                    break
 
-    with ui.tab_panel(two):
-        columns = [
-            {'name': 'name', 'label': 'Imię', 'field': 'name', 'align': 'center'},
-            {'name': 'surname', 'label': 'Nazwisko', 'field': 'surname', 'align': 'center'},
-            {'name': 'pesel', 'label': 'PESEL', 'field': 'pesel', 'align': 'center'},
-            {'name': 'avatar', 'label': 'Avatar', 'field': 'avatar', 'align': 'center'},
-            {'name': 'id', 'label': 'Akcja', 'field': 'id', 'align': 'center'},  # Kolumna akcji
-        ]
-        table = ui.table(columns=columns, rows=[], row_key='id',
-                         column_defaults={'align': 'center', 'headerClasses': 'uppercase text-primary', 'justify-content' : 'center'}).classes('w-full')
+                xtemp, ytemp = xtemp + xint, ytemp + yint
+        return answers
 
-        table.add_slot('body', '''
-            <q-tr :props="props">
-                <q-td v-for="col in props.cols" :key="col.name" :props="props" 
-                      :style="col.name === 'id' ? 'width: 15%;' : 'width: 21.25%;'" class="text-center">
+    def isInBounds(self, x, y):
+        "checks if a position is on the board"
+        if x >= 0 and x < 8 and y >= 0 and y < 8:
+            return True
+        return False
 
-                    <template v-if="col.name === 'avatar'">
-                        <div class="flex justify-center">
-                            <img :src="props.row.avatar" class="w-32 h-32 rounded-full">
-                        </div>
-                    </template>
+    def noConflict(self, gameboard, initialColor, x, y):
+        "checks if a single position poses no conflict to the rules of chess"
+        if self.isInBounds(x, y) and (((x, y) not in gameboard) or gameboard[(x, y)].Color != initialColor): return True
+        return False
 
-                    <template v-else-if="col.name === 'id'">
-                        <div class="flex justify-center items-center gap-4 p-2">
-                            <q-btn color="red" dense icon="delete" size="md"
-                                @click="() => $parent.$emit('delete', props.row)">Usuń</q-btn>
 
-                            <q-btn v-if="!props.row.editing" color="primary" dense icon="edit" size="md"
-                                @click="props.row.editing = true">Edytuj</q-btn>
+chessCardinals = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+chessDiagonals = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
 
-                            <q-btn v-else color="green" dense icon="save" size="md"
-                                @click="() => { 
-                                    $parent.$emit('edit', props.row); 
-                                    props.row.editing = false;
-                                }">Zapisz</q-btn>
-                        </div>
-                    </template>
 
-                    <template v-else>
-                        <q-input v-if="props.row.editing" v-model="props.row[col.name]" dense outlined 
-                                 :label="col.label" class="w-full"/>
-                        <span v-else class="block text-center">{{ col.value }}</span>
-                    </template>
+def knightList(x, y, int1, int2):
+    """sepcifically for the rook, permutes the values needed around a position for noConflict tests"""
+    return [(x + int1, y + int2), (x - int1, y + int2), (x + int1, y - int2), (x - int1, y - int2),
+            (x + int2, y + int1), (x - int2, y + int1), (x + int2, y - int1), (x - int2, y - int1)]
 
-                </q-td>
-            </q-tr>
-        ''')
-        update_table()
-    with ui.tab_panel(three):
-        ui.label('Test')
-table.on('delete', del_user)
-table.on('edit', edit_user)
-ui.run()
+
+def kingList(x, y):
+    return [(x + 1, y), (x + 1, y + 1), (x + 1, y - 1), (x, y + 1), (x, y - 1), (x - 1, y), (x - 1, y + 1),
+            (x - 1, y - 1)]
+
+
+class Knight(Piece):
+    def availableMoves(self, x, y, gameboard, Color=None):
+        if Color is None: Color = self.Color
+        return [(xx, yy) for xx, yy in knightList(x, y, 2, 1) if self.noConflict(gameboard, Color, xx, yy)]
+
+
+class Rook(Piece):
+    def availableMoves(self, x, y, gameboard, Color=None):
+        if Color is None: Color = self.Color
+        return self.AdNauseum(x, y, gameboard, Color, chessCardinals)
+
+
+class Bishop(Piece):
+    def availableMoves(self, x, y, gameboard, Color=None):
+        if Color is None: Color = self.Color
+        return self.AdNauseum(x, y, gameboard, Color, chessDiagonals)
+
+
+class Queen(Piece):
+    def availableMoves(self, x, y, gameboard, Color=None):
+        if Color is None: Color = self.Color
+        return self.AdNauseum(x, y, gameboard, Color, chessCardinals + chessDiagonals)
+
+
+class King(Piece):
+    def availableMoves(self, x, y, gameboard, Color=None):
+        if Color is None: Color = self.Color
+        return [(xx, yy) for xx, yy in kingList(x, y) if self.noConflict(gameboard, Color, xx, yy)]
+
+
+class Pawn(Piece):
+    def __init__(self, color, name, direction):
+        self.name = name
+        self.Color = color
+        # of course, the smallest piece is the hardest to code. direction should be either 1 or -1, should be -1 if the pawn is traveling "backwards"
+        self.direction = direction
+
+    def availableMoves(self, x, y, gameboard, Color=None):
+        if Color is None: Color = self.Color
+        answers = []
+        if (x + 1, y + self.direction) in gameboard and self.noConflict(gameboard, Color, x + 1,
+                                                                        y + self.direction): answers.append(
+            (x + 1, y + self.direction))
+        if (x - 1, y + self.direction) in gameboard and self.noConflict(gameboard, Color, x - 1,
+                                                                        y + self.direction): answers.append(
+            (x - 1, y + self.direction))
+        if (x, y + self.direction) not in gameboard and Color == self.Color: answers.append((x,
+                                                                                             y + self.direction))  # the condition after the and is to make sure the non-capturing movement (the only fucking one in the game) is not used in the calculation of checkmate
+        return answers
+
+
+uniDict = {WHITE: {Pawn: "♙", Rook: "♖", Knight: "♘", Bishop: "♗", King: "♔", Queen: "♕"},
+           BLACK: {Pawn: "♟", Rook: "♜", Knight: "♞", Bishop: "♝", King: "♚", Queen: "♛"}}
+
+Game()
+
+
+def initialize_board(self):
+    return [
+        [Rook('white', 0, 0), Knight('white', 0, 1), Bishop('white', 0, 2), None,
+         King('white', 0, 4), None, Knight('white', 0, 6), Rook('white', 0, 7)],
+        [Pawn('white', 1, 0, self), Pawn('white', 1, 1, self), Pawn('white', 1, 2, self), Pawn('white', 1, 3, self),
+         Pawn('white', 1, 4, self), Pawn('white', 1, 5, self), Pawn('white', 1, 6, self),
+         Pawn('white', 1, 7, self)],
+        [None, None, None, None, None, Queen('white', 2, 5), None, None],
+        [None, None, Bishop('white', 3, 2), None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [Pawn('black', 6, 0, self), Pawn('black', 6, 1, self), Pawn('black', 6, 2, self), Pawn('black', 6, 3, self),
+         Pawn('black', 6, 4, self), Pawn('black', 6, 5, self), Pawn('black', 6, 6, self),
+         Pawn('black', 6, 7, self)],
+        [Rook('black', 7, 0), Knight('black', 7, 1), Bishop('black', 7, 2), Queen('black', 7, 3),
+         King('black', 7, 4), Bishop('black', 7, 5), Knight('black', 7, 6), Rook('black', 7, 7)]
+    ]
+
+
+def initialize_board(self):
+    return [
+        [Rook('white', 0, 0), Knight('white', 0, 1), Bishop('white', 0, 2), Queen('white', 0, 3),
+         King('white', 0, 4), Bishop('white', 0, 5), Knight('white', 0, 6), Rook('white', 0, 7)],
+        [Pawn('white', 1, i, self) for i in range(8)],
+        [None] * 8,
+        [None] * 8,
+        [None] * 8,
+        [None] * 8,
+        [Pawn('black', 6, i, self) for i in range(8)],
+        [Rook('black', 7, 0), Knight('black', 7, 1), Bishop('black', 7, 2), Queen('black', 7, 3),
+         King('black', 7, 4), Bishop('black', 7, 5), Knight('black', 7, 6), Rook('black', 7, 7)]
+    ]
+
+def initialize_board(self):
+    return [
+    [Rook('white', 0, 0), None, None, None, King('white', 0, 4), None, None, Rook('white', 0, 7)],
+    [Pawn('white', 1, i) for i in range(8)],
+    [None] * 8,
+    [None] * 8,
+    [None] * 8,
+    [None] * 8,
+    [Pawn('black', 6, i) for i in range(8)],
+    [Rook('black', 7, 0), None, None, None, King('black', 7, 4), None, None, Rook('black', 7, 7)]
+]
+
+    return [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+    ]

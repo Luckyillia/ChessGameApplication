@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>src.ui.components.chess_endgame API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.ui.components.chess_endgame</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.ui.components.chess_endgame.ChessEndgame"><code class="flex name class">
+<span>class <span class="ident">ChessEndgame</span></span>
+<span>(</span><span>chess)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ChessEndgame:
+    def __init__(self, chess):
+        self.chess = chess
+        self.chess_board = ChessBoard()
+        self.chess_room_management = ChessRoomManagement(self.chess)
+        self.move_count_since_last_capture_or_pawn_move = 0  # Counter for the 50-move rule
+
+    def isCheck(self, color):
+        &#34;&#34;&#34;
+        Checks if the king of the given color is in check.
+        :param color: Color of the king (&#39;white&#39; or &#39;black&#39;)
+        :return: True if the king is in check, False otherwise
+        &#34;&#34;&#34;
+        king_pos = None
+        for row in self.chess.board:
+            for piece in row:
+                if isinstance(piece, King) and piece.color == color:
+                    king_pos = (piece.x, piece.y)
+                    break
+            if king_pos:
+                break
+
+        if not king_pos:
+            return False
+
+        opponent_color = &#39;black&#39; if color == &#39;white&#39; else &#39;white&#39;
+        for row in self.chess.board:
+            for piece in row:
+                if piece and piece.color == opponent_color:
+                    if self.canSeeKing(king_pos, piece):
+                        return True
+
+        return False
+
+    def canSeeKing(self, king_pos, piece):
+        &#34;&#34;&#34;
+        Checks if a given piece can attack the king.
+        :param king_pos: Position of the king (x, y)
+        :param piece: The piece that may attack the king
+        :return: True if the piece can attack the king, False otherwise
+        &#34;&#34;&#34;
+        if not piece:
+            return False
+
+        # Check if the king&#39;s position is within the available moves of the piece
+        if king_pos in piece.available_moves(self.chess.board, self.chess.last_move):
+            return True
+
+        # Additional check for pawns (special capture rules)
+        if isinstance(piece, Pawn):
+            direction = 1 if piece.color == &#39;white&#39; else -1
+            x, y = piece.x, piece.y
+            # Check if the king is within the pawn&#39;s capture range
+            if (king_pos == (x + direction, y - 1)) or (king_pos == (x + direction, y + 1)):
+                return True
+
+        return False
+
+    def is_move_safe(self, start_row, start_col, end_row, end_col):
+        &#34;&#34;&#34;
+        Simulates a move to check if it leaves the king in check.
+        :param start_row: Starting row of the piece
+        :param start_col: Starting column of the piece
+        :param end_row: Ending row after the move
+        :param end_col: Ending column after the move
+        :return: True if the move is safe (king is not in check), False otherwise
+        &#34;&#34;&#34;
+        piece = self.chess.board[start_row][start_col]
+        target_piece = self.chess.board[end_row][end_col]
+
+        # Save the original coordinates of the piece
+        original_x, original_y = piece.x, piece.y
+
+        # Simulate the move (update the board and piece coordinates)
+        self.chess.board[end_row][end_col] = piece
+        self.chess.board[start_row][start_col] = None
+        piece.x, piece.y = end_row, end_col  # Update the coordinates of the piece
+
+        # Check if the king is in check after the move
+        is_safe = not self.isCheck(piece.color)
+
+        # Undo the simulation (restore the board and piece coordinates)
+        self.chess.board[start_row][start_col] = piece
+        self.chess.board[end_row][end_col] = target_piece
+        piece.x, piece.y = original_x, original_y  # Restore original coordinates
+        piece.x, piece.y = original_x, original_y
+
+        return is_safe
+
+    def isCheckMate(self, color):
+        &#34;&#34;&#34;
+        Checks if the king of the given color is checkmated.
+        :param color: Color of the king (&#39;white&#39; or &#39;black&#39;)
+        :return: True if checkmate, False otherwise
+        &#34;&#34;&#34;
+        # Check if the king is in check
+        if not self.isCheck(color):
+            return False
+
+        # Iterate through all pieces of the player
+        for row in range(self.chess.board_row):
+            for col in range(self.chess.board_col):
+                piece = self.chess.board[row][col]
+                if piece and piece.color == color:
+                    # Get all available moves for the piece
+                    moves = piece.available_moves(self.chess.board, self.chess.last_move)
+                    for (new_row, new_col) in moves:
+                        # Simulate the move and check if the king is safe
+                        if self.is_move_safe(row, col, new_row, new_col):
+                            return False  # Found a move that removes the check
+
+        return True  # No possible moves — checkmate
+
+    def isStalemate(self, color):
+        &#34;&#34;&#34;
+        Checks if a stalemate has occurred.
+        :param color: Color of the player whose turn it is (&#39;white&#39; or &#39;black&#39;)
+        :return: True if stalemate, False otherwise
+        &#34;&#34;&#34;
+        # Check if the king is not in check
+        if self.isCheck(color):
+            return False
+
+        # Iterate through all pieces of the player
+        for row in range(self.chess.board_row):
+            for col in range(self.chess.board_col):
+                piece = self.chess.board[row][col]
+                if piece and piece.color == color:
+                    # Get all available moves for the piece
+                    moves = piece.available_moves(self.chess.board, self.chess.last_move)
+                    for (new_row, new_col) in moves:
+                        # Simulate the move and check if the king is safe
+                        if self.is_move_safe(row, col, new_row, new_col):
+                            return False  # Found a legal move
+
+        return True  # No possible moves — stalemate
+
+    def is_king_vs_king(self):
+        &#34;&#34;&#34;
+        Checks if only kings are left on the board.
+        :return: True if only kings remain, False otherwise
+        &#34;&#34;&#34;
+        for row in self.chess.board:
+            for piece in row:
+                if piece and not isinstance(piece, King):
+                    return False
+        return True
+
+    def is_75_move_rule(self):
+        &#34;&#34;&#34;
+        Checks if the 75-move rule applies.
+        :return: True if 150 half-moves (75 full moves) have passed without a capture or pawn move
+        &#34;&#34;&#34;
+        return self.move_count_since_last_capture_or_pawn_move &gt;= 150
+
+
+    def update_move_count(self, reset_counter):
+        &#34;&#34;&#34;
+        Updates the move counter for the 75-move rule.
+        :param reset_counter: True if the move was a capture or pawn move
+        &#34;&#34;&#34;
+        if reset_counter:
+            self.move_count_since_last_capture_or_pawn_move = 0
+        else:
+            self.move_count_since_last_capture_or_pawn_move += 1
+
+
+
+    def end(self, color=None):
+        def restart_game():
+            game_state_id = app.storage.user.get(&#39;game_state_id&#39;)
+            self.chess.last_move = None
+            self.chess.white_captured = []
+            self.chess.black_captured = []
+            self.move_count_since_last_capture_or_pawn_move = 0
+            GameStateService().restart_game_state(game_state_id, self.chess_room_management, self.chess)
+            self.chess.board = ChessBoard().init_board()
+            self.chess.update_board()
+            self.chess_room_management.save_game_state()
+            dialog.close()
+
+        with ui.dialog() as dialog, ui.card().classes(&#39;p-4&#39;):
+            if color:
+                ui.label(f&#39;{color.capitalize()} Won&#39;).classes(&#39;text-xl font-bold text-center w-full&#39;)
+            else:
+                ui.label(&#39;Draw&#39;).classes(&#39;text-xl font-bold text-center w-full&#39;)
+
+            with ui.row().classes(&#39;justify-center w-full&#39;):
+                ui.button(&#39;Restartuj Gre&#39;, on_click=restart_game).classes(
+                    &#39;bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500&#39;
+                )
+                ui.button(&#39;Zobacz plansze&#39;, on_click=dialog.close).classes(
+                    &#39;bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500&#39;
+                )
+
+        dialog.open()</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.canSeeKing"><code class="name flex">
+<span>def <span class="ident">canSeeKing</span></span>(<span>self, king_pos, piece)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def canSeeKing(self, king_pos, piece):
+    &#34;&#34;&#34;
+    Checks if a given piece can attack the king.
+    :param king_pos: Position of the king (x, y)
+    :param piece: The piece that may attack the king
+    :return: True if the piece can attack the king, False otherwise
+    &#34;&#34;&#34;
+    if not piece:
+        return False
+
+    # Check if the king&#39;s position is within the available moves of the piece
+    if king_pos in piece.available_moves(self.chess.board, self.chess.last_move):
+        return True
+
+    # Additional check for pawns (special capture rules)
+    if isinstance(piece, Pawn):
+        direction = 1 if piece.color == &#39;white&#39; else -1
+        x, y = piece.x, piece.y
+        # Check if the king is within the pawn&#39;s capture range
+        if (king_pos == (x + direction, y - 1)) or (king_pos == (x + direction, y + 1)):
+            return True
+
+    return False</code></pre>
+</details>
+<div class="desc"><p>Checks if a given piece can attack the king.
+:param king_pos: Position of the king (x, y)
+:param piece: The piece that may attack the king
+:return: True if the piece can attack the king, False otherwise</p></div>
+</dd>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.end"><code class="name flex">
+<span>def <span class="ident">end</span></span>(<span>self, color=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def end(self, color=None):
+    def restart_game():
+        game_state_id = app.storage.user.get(&#39;game_state_id&#39;)
+        self.chess.last_move = None
+        self.chess.white_captured = []
+        self.chess.black_captured = []
+        self.move_count_since_last_capture_or_pawn_move = 0
+        GameStateService().restart_game_state(game_state_id, self.chess_room_management, self.chess)
+        self.chess.board = ChessBoard().init_board()
+        self.chess.update_board()
+        self.chess_room_management.save_game_state()
+        dialog.close()
+
+    with ui.dialog() as dialog, ui.card().classes(&#39;p-4&#39;):
+        if color:
+            ui.label(f&#39;{color.capitalize()} Won&#39;).classes(&#39;text-xl font-bold text-center w-full&#39;)
+        else:
+            ui.label(&#39;Draw&#39;).classes(&#39;text-xl font-bold text-center w-full&#39;)
+
+        with ui.row().classes(&#39;justify-center w-full&#39;):
+            ui.button(&#39;Restartuj Gre&#39;, on_click=restart_game).classes(
+                &#39;bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500&#39;
+            )
+            ui.button(&#39;Zobacz plansze&#39;, on_click=dialog.close).classes(
+                &#39;bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500&#39;
+            )
+
+    dialog.open()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.isCheck"><code class="name flex">
+<span>def <span class="ident">isCheck</span></span>(<span>self, color)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isCheck(self, color):
+    &#34;&#34;&#34;
+    Checks if the king of the given color is in check.
+    :param color: Color of the king (&#39;white&#39; or &#39;black&#39;)
+    :return: True if the king is in check, False otherwise
+    &#34;&#34;&#34;
+    king_pos = None
+    for row in self.chess.board:
+        for piece in row:
+            if isinstance(piece, King) and piece.color == color:
+                king_pos = (piece.x, piece.y)
+                break
+        if king_pos:
+            break
+
+    if not king_pos:
+        return False
+
+    opponent_color = &#39;black&#39; if color == &#39;white&#39; else &#39;white&#39;
+    for row in self.chess.board:
+        for piece in row:
+            if piece and piece.color == opponent_color:
+                if self.canSeeKing(king_pos, piece):
+                    return True
+
+    return False</code></pre>
+</details>
+<div class="desc"><p>Checks if the king of the given color is in check.
+:param color: Color of the king ('white' or 'black')
+:return: True if the king is in check, False otherwise</p></div>
+</dd>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.isCheckMate"><code class="name flex">
+<span>def <span class="ident">isCheckMate</span></span>(<span>self, color)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isCheckMate(self, color):
+    &#34;&#34;&#34;
+    Checks if the king of the given color is checkmated.
+    :param color: Color of the king (&#39;white&#39; or &#39;black&#39;)
+    :return: True if checkmate, False otherwise
+    &#34;&#34;&#34;
+    # Check if the king is in check
+    if not self.isCheck(color):
+        return False
+
+    # Iterate through all pieces of the player
+    for row in range(self.chess.board_row):
+        for col in range(self.chess.board_col):
+            piece = self.chess.board[row][col]
+            if piece and piece.color == color:
+                # Get all available moves for the piece
+                moves = piece.available_moves(self.chess.board, self.chess.last_move)
+                for (new_row, new_col) in moves:
+                    # Simulate the move and check if the king is safe
+                    if self.is_move_safe(row, col, new_row, new_col):
+                        return False  # Found a move that removes the check
+
+    return True  # No possible moves — checkmate</code></pre>
+</details>
+<div class="desc"><p>Checks if the king of the given color is checkmated.
+:param color: Color of the king ('white' or 'black')
+:return: True if checkmate, False otherwise</p></div>
+</dd>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.isStalemate"><code class="name flex">
+<span>def <span class="ident">isStalemate</span></span>(<span>self, color)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isStalemate(self, color):
+    &#34;&#34;&#34;
+    Checks if a stalemate has occurred.
+    :param color: Color of the player whose turn it is (&#39;white&#39; or &#39;black&#39;)
+    :return: True if stalemate, False otherwise
+    &#34;&#34;&#34;
+    # Check if the king is not in check
+    if self.isCheck(color):
+        return False
+
+    # Iterate through all pieces of the player
+    for row in range(self.chess.board_row):
+        for col in range(self.chess.board_col):
+            piece = self.chess.board[row][col]
+            if piece and piece.color == color:
+                # Get all available moves for the piece
+                moves = piece.available_moves(self.chess.board, self.chess.last_move)
+                for (new_row, new_col) in moves:
+                    # Simulate the move and check if the king is safe
+                    if self.is_move_safe(row, col, new_row, new_col):
+                        return False  # Found a legal move
+
+    return True  # No possible moves — stalemate</code></pre>
+</details>
+<div class="desc"><p>Checks if a stalemate has occurred.
+:param color: Color of the player whose turn it is ('white' or 'black')
+:return: True if stalemate, False otherwise</p></div>
+</dd>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.is_75_move_rule"><code class="name flex">
+<span>def <span class="ident">is_75_move_rule</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_75_move_rule(self):
+    &#34;&#34;&#34;
+    Checks if the 75-move rule applies.
+    :return: True if 150 half-moves (75 full moves) have passed without a capture or pawn move
+    &#34;&#34;&#34;
+    return self.move_count_since_last_capture_or_pawn_move &gt;= 150</code></pre>
+</details>
+<div class="desc"><p>Checks if the 75-move rule applies.
+:return: True if 150 half-moves (75 full moves) have passed without a capture or pawn move</p></div>
+</dd>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.is_king_vs_king"><code class="name flex">
+<span>def <span class="ident">is_king_vs_king</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_king_vs_king(self):
+    &#34;&#34;&#34;
+    Checks if only kings are left on the board.
+    :return: True if only kings remain, False otherwise
+    &#34;&#34;&#34;
+    for row in self.chess.board:
+        for piece in row:
+            if piece and not isinstance(piece, King):
+                return False
+    return True</code></pre>
+</details>
+<div class="desc"><p>Checks if only kings are left on the board.
+:return: True if only kings remain, False otherwise</p></div>
+</dd>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.is_move_safe"><code class="name flex">
+<span>def <span class="ident">is_move_safe</span></span>(<span>self, start_row, start_col, end_row, end_col)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_move_safe(self, start_row, start_col, end_row, end_col):
+    &#34;&#34;&#34;
+    Simulates a move to check if it leaves the king in check.
+    :param start_row: Starting row of the piece
+    :param start_col: Starting column of the piece
+    :param end_row: Ending row after the move
+    :param end_col: Ending column after the move
+    :return: True if the move is safe (king is not in check), False otherwise
+    &#34;&#34;&#34;
+    piece = self.chess.board[start_row][start_col]
+    target_piece = self.chess.board[end_row][end_col]
+
+    # Save the original coordinates of the piece
+    original_x, original_y = piece.x, piece.y
+
+    # Simulate the move (update the board and piece coordinates)
+    self.chess.board[end_row][end_col] = piece
+    self.chess.board[start_row][start_col] = None
+    piece.x, piece.y = end_row, end_col  # Update the coordinates of the piece
+
+    # Check if the king is in check after the move
+    is_safe = not self.isCheck(piece.color)
+
+    # Undo the simulation (restore the board and piece coordinates)
+    self.chess.board[start_row][start_col] = piece
+    self.chess.board[end_row][end_col] = target_piece
+    piece.x, piece.y = original_x, original_y  # Restore original coordinates
+    piece.x, piece.y = original_x, original_y
+
+    return is_safe</code></pre>
+</details>
+<div class="desc"><p>Simulates a move to check if it leaves the king in check.
+:param start_row: Starting row of the piece
+:param start_col: Starting column of the piece
+:param end_row: Ending row after the move
+:param end_col: Ending column after the move
+:return: True if the move is safe (king is not in check), False otherwise</p></div>
+</dd>
+<dt id="src.ui.components.chess_endgame.ChessEndgame.update_move_count"><code class="name flex">
+<span>def <span class="ident">update_move_count</span></span>(<span>self, reset_counter)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_move_count(self, reset_counter):
+    &#34;&#34;&#34;
+    Updates the move counter for the 75-move rule.
+    :param reset_counter: True if the move was a capture or pawn move
+    &#34;&#34;&#34;
+    if reset_counter:
+        self.move_count_since_last_capture_or_pawn_move = 0
+    else:
+        self.move_count_since_last_capture_or_pawn_move += 1</code></pre>
+</details>
+<div class="desc"><p>Updates the move counter for the 75-move rule.
+:param reset_counter: True if the move was a capture or pawn move</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.ui.components" href="index.html">src.ui.components</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.ui.components.chess_endgame.ChessEndgame" href="#src.ui.components.chess_endgame.ChessEndgame">ChessEndgame</a></code></h4>
+<ul class="two-column">
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.canSeeKing" href="#src.ui.components.chess_endgame.ChessEndgame.canSeeKing">canSeeKing</a></code></li>
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.end" href="#src.ui.components.chess_endgame.ChessEndgame.end">end</a></code></li>
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.isCheck" href="#src.ui.components.chess_endgame.ChessEndgame.isCheck">isCheck</a></code></li>
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.isCheckMate" href="#src.ui.components.chess_endgame.ChessEndgame.isCheckMate">isCheckMate</a></code></li>
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.isStalemate" href="#src.ui.components.chess_endgame.ChessEndgame.isStalemate">isStalemate</a></code></li>
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.is_75_move_rule" href="#src.ui.components.chess_endgame.ChessEndgame.is_75_move_rule">is_75_move_rule</a></code></li>
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.is_king_vs_king" href="#src.ui.components.chess_endgame.ChessEndgame.is_king_vs_king">is_king_vs_king</a></code></li>
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.is_move_safe" href="#src.ui.components.chess_endgame.ChessEndgame.is_move_safe">is_move_safe</a></code></li>
+<li><code><a title="src.ui.components.chess_endgame.ChessEndgame.update_move_count" href="#src.ui.components.chess_endgame.ChessEndgame.update_move_count">update_move_count</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
