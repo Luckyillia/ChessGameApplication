@@ -10,6 +10,16 @@ class ChessRoomManagement:
         self.chess = chess
 
     def check_for_updates(self):
+        if self.chess.chess_timer.mode and self.chess.chess_timer.timer_running:
+            self.chess.chess_timer.update_time(self.chess.turn)
+            if self.chess.chess_timer.white_time <= 0:
+                self.chess.end_game_class.end('black')
+                self.chess.chess_timer.timer_running = False
+                return
+            if self.chess.chess_timer.black_time <= 0:
+                self.chess.chess_timer.timer_running = False
+                self.chess.end_game_class.end('white')
+                return
         current_state = self.game_state_service.load_game_state(app.storage.user.get('game_state_id'))
         if not current_state and app.storage.user.get('game_state_id'):
             app.storage.user.update({'game_state_id': None, 'color': None})

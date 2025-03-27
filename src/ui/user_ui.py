@@ -16,6 +16,7 @@ class UserUI:
         self.game_state_service = GameStateService()
         self.user_table = UserTable(self.user_service)
         self.menu = None
+        self.chess = None
         self.setup_ui()
 
     def setup_ui(self):
@@ -50,13 +51,16 @@ class UserUI:
                 'text-xl font-semibold text-primary text-center')
             ui.button(on_click=self.logout, icon='logout').props('outline round')
             with ui.button(icon='menu').props('outline round'):
-                with ui.menu() as self.menu:
+                self.menu = ui.menu().classes('w-64')
+                with self.menu:
                     ui.menu_item('Utwórz nowy pokój', lambda: (self.create_new_room(), self.menu.close()))
                     ui.menu_item('Wyjdź z pokoju', lambda: (self.exit_room(), self.menu.close()))
                     ui.menu_item('Dołącz do pokoju', lambda: (self.join_room(), self.menu.close()))
                     ui.menu_item('Sprawdz kod pokoju', lambda: (self.check_room_id(), self.menu.close()))
                     ui.separator()
                     ui.menu_item('Close', self.menu.close)
+
+        self.chess = Chess(self.menu)
 
         # Define content for each tab
         with ui.tab_panels(tabs, value=one).classes('w-full flex justify-center items-center'):
@@ -70,7 +74,7 @@ class UserUI:
                     ui.notify('Nie masz uprawnien', color='red')
 
             with ui.tab_panel(three):
-                self.chess = Chess(self.menu)
+                self.chess.create_chessboard()
 
     async def handle_paste(self):
         code = await ui.clipboard.read()
@@ -94,12 +98,11 @@ class UserUI:
             game_state_id = self.game_state_service.create_new_game_state(app.storage.user.get('user_id'))
             self.game_state_service.update_user_game_state(app.storage.user.get('user_id'), game_state_id , 'white')
             app.storage.user.update({'game_state_id': game_state_id, 'color': 'white'})
-            self.chess.board = ChessBoard().init_stalemate()
+            self.chess.board = ChessBoard().init_board()
             self.chess.update_board()
             self.chess.chess_room_management.save_game_state()
-            self.room_code_label.text = f'Kod pokoju: {game_state_id}'
-            ui.update()  # Wymuś aktualizację interfejsu
-            self.room_dialog.open()
+            ui.update()
+            self.chess.chess_timer.mode_dialog.open()
         else:
             ui.notify('Juz jestes w pokoju!', type='warning')
 

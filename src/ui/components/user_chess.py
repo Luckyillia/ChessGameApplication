@@ -7,6 +7,7 @@ from src.ui.components.chess_endgame import ChessEndgame
 from src.ui.components.chess_pieces import King, Pawn
 from src.services.game_state import GameStateService
 from src.ui.components.chess_room_management import ChessRoomManagement
+from src.ui.components.chess_timer import ChessTimer
 
 
 class Chess:
@@ -19,7 +20,9 @@ class Chess:
         self.board_class = ChessBoard()
         self.end_game_class = ChessEndgame(self)
         self.handling_castling = ChessCastling(self)
+        self.chess_timer = ChessTimer()
         self.chess_room_management = ChessRoomManagement(self)
+
 
         self.menu = menu
         self.start_pos = None
@@ -36,7 +39,6 @@ class Chess:
         if app.storage.user.get('game_state_id'):
             self.chess_room_management.load_game_state(app.storage.user.get('game_state_id'))
 
-        self.create_chessboard()
 
         self.PIECE_NAMES_PL = {
             "Pawn": "Pionek",
@@ -129,6 +131,8 @@ class Chess:
 
     def move_piece(self, start_row, start_col, end_row, end_col):
         # [Existing code with save_game_state added at the end]
+        if not self.chess_timer.timer_running and self.chess_timer.mode:
+            self.chess_timer.timer_running = True
         piece = self.board[start_row][start_col]
         target_piece = self.board[end_row][end_col]
         is_capture = False  # Flag to track captures
