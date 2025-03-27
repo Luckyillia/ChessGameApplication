@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>src.ui.components.user_chess API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.ui.components.user_chess</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.ui.components.user_chess.Chess"><code class="flex name class">
+<span>class <span class="ident">Chess</span></span>
+<span>(</span><span>menu)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Chess:
+    def __init__(self, menu):
+        # Initialize board size and set the initial state
+        self.board_row = 8
+        self.board_col = 8
+
+        self.game_state_service = GameStateService()
+        self.board_class = ChessBoard()
+        self.end_game_class = ChessEndgame(self)
+        self.handling_castling = ChessCastling(self)
+        self.chess_timer = ChessTimer()
+        self.chess_room_management = ChessRoomManagement(self)
+
+
+        self.menu = menu
+        self.start_pos = None
+        self.turn = &#39;white&#39;
+        self.grid = None
+        self.board = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
+        self.squares = [[None for _ in range(self.board_col)] for _ in range(self.board_row)]
+        self.white_captured = []
+        self.black_captured = []
+        self.last_move = None
+        self.last_update = 0
+
+        # Try to load saved game state
+        if app.storage.user.get(&#39;game_state_id&#39;):
+            self.chess_room_management.load_game_state(app.storage.user.get(&#39;game_state_id&#39;))
+
+
+        self.PIECE_NAMES_PL = {
+            &#34;Pawn&#34;: &#34;Pionek&#34;,
+            &#34;Rook&#34;: &#34;Wieża&#34;,
+            &#34;Knight&#34;: &#34;Skoczek&#34;,
+            &#34;Bishop&#34;: &#34;Goniec&#34;,
+            &#34;Queen&#34;: &#34;Królowa&#34;,
+            &#34;King&#34;: &#34;Król&#34;,
+        }
+        self.TURN_PL = {
+            &#34;black&#34;: &#34;Czarnych&#34;,
+            &#34;white&#34;: &#34;Białych&#34;
+        }
+
+        ui.timer(interval=1.0, callback=self.chess_room_management.check_for_updates)
+
+    def create_chessboard(self):
+        if app.storage.user.get(&#39;game_state_id&#39;) is None:
+            room_dialog = ui.dialog().classes(&#39;w-full&#39;)
+            with room_dialog, ui.card():
+                ui.label(&#39;Nie jestes w aktywnym pokoju&#39;).classes(&#39;text-center text-xl font-bold&#39;)
+                ui.label(&#39;Dolacz do aktywnego pokoju lub stworz&#39;).classes(&#39;text-center&#39;)
+                ui.button(&#39;Zamknij&#39;, on_click=lambda: [self.menu.open(), room_dialog.close()])
+            room_dialog.open()
+
+        # Main container for the chessboard and side elements
+        with ui.row().classes(&#39;w-full justify-center items-center&#39;):
+            # Left side container (black captured pieces and black timer)
+            with ui.column().classes(&#39;flex flex-col items-center h-full justify-between&#39;):
+                self.chess_timer.display_black()
+                self.captured_black_grid = ui.grid(columns=4).classes(&#39;w-auto gap-0&#39;).style(
+                    &#39;display: grid; grid-template-columns: repeat(4, 1fr);&#39;
+                )
+
+            # Chessboard
+            self.grid = ui.grid(columns=8).classes(&#39;w-auto m-auto gap-0&#39;)
+            with self.grid:
+                for i in range(self.board_row):
+                    for j in range(self.board_col):
+                        color = &#39;#769656&#39; if (i + j) % 2 == 0 else &#39;#EEEED2&#39;
+                        text_color = &#39;#EEEED2&#39; if color == &#39;#769656&#39; else &#39;#769656&#39;
+                        reversed_row = self.board_row - i
+
+                        with ui.element(&#39;div&#39;).style(
+                                f&#39;background-color: {color}; width: 100px; height: 100px; position: relative;&#39;).on(
+                            &#39;click&#39;, partial(self.handle_square_click, i, j)) as square:
+
+                            ui.label(f&#39;{chr(ord(&#34;a&#34;) + j)}{reversed_row}&#39;).style(
+                                f&#39;position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};&#39;)
+
+                            self.squares[i][j] = square
+                            if app.storage.user.get(&#39;game_state_id&#39;) is not None:
+                                piece = self.board[i][j]
+                                if piece:
+                                    piece_type = piece.__class__.__name__.lower()
+                                    piece_color = piece.color
+                                    image_path = f&#39;./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png&#39;
+
+                                    with square:
+                                        ui.image(image_path).style(&#39;pointer-events: none;&#39;)
+                                        if isinstance(piece, King):
+                                            self.add_king_context_menu(square, piece)
+
+            # Right side container (white captured pieces and white timer)
+            with ui.column().classes(&#39;flex flex-col items-center h-full justify-between&#39;):
+                self.chess_timer.display_white()
+                self.captured_white_grid = ui.grid(columns=4).classes(&#39;w-auto gap-0&#39;).style(
+                    &#39;display: grid; grid-template-columns: repeat(4, 1fr); direction: rtl;&#39;
+                )
+
+        self.update_captured_pieces()
+
+    def handle_square_click(self, i, j):
+        # [Existing code remains the same]
+        piece = self.board[i][j]
+        piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__) if piece else None
+        if app.storage.user.get(&#39;color&#39;) is None and app.storage.user.get(&#39;game_state_id&#39;) is not None:
+            ui.notify(&#39;Jestes widzem&#39;, color=&#39;red&#39;)
+            return
+
+        if self.start_pos is None:
+            if piece and self.turn == piece.color:
+                self.start_pos = (i, j)
+                ui.notify(f&#39;Wybrano {piece_name_pl}&#39;, color=&#39;blue&#39;)
+            else:
+                ui.notify(&#39;Nie możesz ruszyć tej figury!&#39;, color=&#39;red&#39;)
+        else:
+            start_row, start_col = self.start_pos
+            piece = self.board[start_row][start_col]
+
+            if piece and (i, j) in piece.available_moves(self.board, self.last_move):
+                # Check if piece is not None
+                self.move_piece(start_row, start_col, i, j)
+            else:
+                ui.notify(&#39;Nieprawidłowy ruch!&#39;, color=&#39;red&#39;)
+            self.start_pos = None
+
+    def move_piece(self, start_row, start_col, end_row, end_col):
+        # [Existing code with save_game_state added at the end]
+        if not self.chess_timer.timer_running and self.chess_timer.mode:
+            self.chess_timer.timer_running = True
+        piece = self.board[start_row][start_col]
+        target_piece = self.board[end_row][end_col]
+        is_capture = False  # Flag to track captures
+        piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__)
+        turn_pl = self.TURN_PL.get(self.turn, self.turn)
+
+        if app.storage.user.get(&#39;color&#39;) != self.turn:
+            ui.notify(&#39;Nie twoja kolej!&#39;, color=&#39;red&#39;)
+            return
+
+        # Check if the move is available
+        if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
+            ui.notify(&#39;Nieprawidłowy ruch!&#39;, color=&#39;red&#39;)
+            return
+
+        # If the piece is a King, ensure the move is safe
+        if isinstance(piece, King):
+            if not self.end_game_class.is_move_safe(start_row, start_col, end_row, end_col):
+                ui.notify(&#39;Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!&#39;, color=&#39;red&#39;)
+                return
+
+        # Simulate the move and check for check
+        original_piece = self.board[end_row][end_col]
+        original_x, original_y = piece.x, piece.y
+
+        piece.x, piece.y = end_row, end_col
+        self.board[end_row][end_col] = piece
+        self.board[start_row][start_col] = None
+
+        if self.end_game_class.isCheck(piece.color):
+            # Undo the simulation
+            self.board[start_row][start_col] = piece
+            self.board[end_row][end_col] = original_piece
+            piece.x, piece.y = original_x, original_y
+            ui.notify(&#39;Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!&#39;, color=&#39;red&#39;)
+            return
+
+        # Restore the move if it was safe
+        self.board[start_row][start_col] = piece
+        self.board[end_row][end_col] = original_piece
+        piece.x, piece.y = original_x, original_y
+
+        # Handle en passant capture
+        if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
+            captured_pawn = self.board[start_row][end_col]
+            if isinstance(captured_pawn, Pawn) and captured_pawn.color != piece.color:
+                is_capture = True  # Mark en passant capture
+                self.board[start_row][end_col] = None
+                if captured_pawn.color == &#39;white&#39;:
+                    self.white_captured.append(captured_pawn)
+                else:
+                    self.black_captured.append(captured_pawn)
+                self.update_square(start_row, end_col)
+
+        # Normal capture
+        elif target_piece:
+            is_capture = True  # Mark normal capture
+            if target_piece.color == &#39;white&#39;:
+                self.white_captured.append(target_piece)
+            else:
+                self.black_captured.append(target_piece)
+
+        # Perform the move
+        self.board[start_row][start_col] = None
+        if isinstance(piece, Pawn):
+            piece.move_piece(end_row, end_col, self)
+        else:
+            piece.move_piece(end_row, end_col)
+        self.board[end_row][end_col] = piece
+
+        # Update the board
+        self.update_square(start_row, start_col)
+        self.update_square(end_row, end_col)
+
+        # Change turns
+        self.turn = &#39;black&#39; if self.turn == &#39;white&#39; else &#39;white&#39;
+
+        # Check check after move
+        if self.end_game_class.isCheck(self.turn):
+            if self.end_game_class.isCheckMate(self.turn):
+                self.end_game_class.end(&#39;black&#39; if self.turn == &#39;white&#39; else &#39;white&#39;)
+            else:
+                piece_name = self.PIECE_NAMES_PL[&#34;King&#34;]  # Get the name for &#34;King&#34;
+                turn_name = self.TURN_PL[self.turn]  # Get the name for the turn (&#34;Białych&#34; or &#34;Czarnych&#34;)
+                ui.notify(f&#39;{turn_name} {piece_name} jest w szachu!&#39;, color=&#39;red&#39;)
+        else:
+            # Check for stalemate
+            if self.end_game_class.isStalemate(self.turn):
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            elif self.end_game_class.is_king_vs_king():
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            elif self.end_game_class.is_75_move_rule():
+                self.end_game_class.end()  # Assume the `end` method handles a draw
+            else:
+                pass
+
+        # Notification after move piece
+        notation = f&#39;{chr(ord(&#34;a&#34;) + end_col)}{8 - end_row}&#39;
+        ui.notify(f&#39;Przeniesiono {piece_name_pl} na {notation}&#39;, color=&#39;blue&#39;)
+
+        # Update captured pieces
+        self.update_captured_pieces()
+
+        self.last_move = (piece, (start_row, start_col), (end_row, end_col))
+
+        # If the piece is a king, mark it as moved
+        if isinstance(piece, King):
+            piece.has_moved = True
+
+        # Check if it&#39;s a pawn move
+        is_pawn_move = isinstance(piece, Pawn)
+        # Update the move counter for the 75-move rule
+        self.end_game_class.update_move_count(is_capture or is_pawn_move)
+
+        # Save game state after move
+        self.chess_room_management.save_game_state()
+
+    # [Rest of the methods remain the same]
+    def add_king_context_menu(self, square, piece):
+        with square:
+            with ui.context_menu():
+                ui.menu_item(&#39;Roszada długa&#39;, on_click=partial(self.handling_castling.handle_castling, piece, &#39;long&#39;))
+                ui.menu_item(&#39;Roszada krótka&#39;, on_click=partial(self.handling_castling.handle_castling, piece, &#39;short&#39;))
+
+    def update_square(self, row, col):
+        square = self.squares[row][col]
+        square.clear()
+
+        # Calculate reversed row number (8 at the top, 1 at the bottom)
+        reversed_row = self.board_row - row  # Reverse the order of rows (8 -&gt; 1)
+
+        # Recreating the numbering of the fields
+        color = &#39;#769656&#39; if (row + col) % 2 == 0 else &#39;#EEEED2&#39;
+        text_color = &#39;#EEEED2&#39; if color == &#39;#769656&#39; else &#39;#769656&#39;
+        with square:
+            ui.label(f&#39;{chr(ord(&#34;a&#34;) + col)}{reversed_row}&#39;).style(
+                f&#39;position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};&#39;)
+
+        piece = self.board[row][col]
+        if piece:
+            piece_type = piece.__class__.__name__.lower()
+            piece_color = piece.color
+            # Updated image path to match your directory structure
+            image_path = f&#39;./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png&#39;
+
+            with square:
+                ui.image(image_path).style(&#39;pointer-events: none;&#39;)
+                if isinstance(piece, King):
+                    self.add_king_context_menu(square, piece)
+
+    def update_captured_pieces(self):
+        # Clear the grids
+        self.captured_white_grid.clear()
+        self.captured_black_grid.clear()
+
+        # Update white captured pieces (right side)
+        with self.captured_white_grid:
+            for piece in reversed(self.white_captured):
+                with ui.element(&#39;div&#39;).style(&#39;width: 80px; height: 80px;&#39;).classes(&#39;m-auto&#39;):
+                    piece_type = piece.__class__.__name__.lower()
+                    image_path = f&#39;./src/img/white-pieces/{piece_type}-white.png&#39;
+                    ui.image(image_path)
+
+        # Update black captured pieces (left side)
+        with self.captured_black_grid:
+            for piece in self.black_captured:
+                with ui.element(&#39;div&#39;).style(&#39;width: 80px; height: 80px;&#39;).classes(&#39;m-auto&#39;):
+                    piece_type = piece.__class__.__name__.lower()
+                    image_path = f&#39;./src/img/black-pieces/{piece_type}-black.png&#39;
+                    ui.image(image_path)
+
+    def update_board(self):
+        for i in range(self.board_row):
+            for j in range(self.board_col):
+                self.update_square(i, j)</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.user_chess.Chess.add_king_context_menu"><code class="name flex">
+<span>def <span class="ident">add_king_context_menu</span></span>(<span>self, square, piece)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_king_context_menu(self, square, piece):
+    with square:
+        with ui.context_menu():
+            ui.menu_item(&#39;Roszada długa&#39;, on_click=partial(self.handling_castling.handle_castling, piece, &#39;long&#39;))
+            ui.menu_item(&#39;Roszada krótka&#39;, on_click=partial(self.handling_castling.handle_castling, piece, &#39;short&#39;))</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.user_chess.Chess.create_chessboard"><code class="name flex">
+<span>def <span class="ident">create_chessboard</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_chessboard(self):
+    if app.storage.user.get(&#39;game_state_id&#39;) is None:
+        room_dialog = ui.dialog().classes(&#39;w-full&#39;)
+        with room_dialog, ui.card():
+            ui.label(&#39;Nie jestes w aktywnym pokoju&#39;).classes(&#39;text-center text-xl font-bold&#39;)
+            ui.label(&#39;Dolacz do aktywnego pokoju lub stworz&#39;).classes(&#39;text-center&#39;)
+            ui.button(&#39;Zamknij&#39;, on_click=lambda: [self.menu.open(), room_dialog.close()])
+        room_dialog.open()
+
+    # Main container for the chessboard and side elements
+    with ui.row().classes(&#39;w-full justify-center items-center&#39;):
+        # Left side container (black captured pieces and black timer)
+        with ui.column().classes(&#39;flex flex-col items-center h-full justify-between&#39;):
+            self.chess_timer.display_black()
+            self.captured_black_grid = ui.grid(columns=4).classes(&#39;w-auto gap-0&#39;).style(
+                &#39;display: grid; grid-template-columns: repeat(4, 1fr);&#39;
+            )
+
+        # Chessboard
+        self.grid = ui.grid(columns=8).classes(&#39;w-auto m-auto gap-0&#39;)
+        with self.grid:
+            for i in range(self.board_row):
+                for j in range(self.board_col):
+                    color = &#39;#769656&#39; if (i + j) % 2 == 0 else &#39;#EEEED2&#39;
+                    text_color = &#39;#EEEED2&#39; if color == &#39;#769656&#39; else &#39;#769656&#39;
+                    reversed_row = self.board_row - i
+
+                    with ui.element(&#39;div&#39;).style(
+                            f&#39;background-color: {color}; width: 100px; height: 100px; position: relative;&#39;).on(
+                        &#39;click&#39;, partial(self.handle_square_click, i, j)) as square:
+
+                        ui.label(f&#39;{chr(ord(&#34;a&#34;) + j)}{reversed_row}&#39;).style(
+                            f&#39;position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};&#39;)
+
+                        self.squares[i][j] = square
+                        if app.storage.user.get(&#39;game_state_id&#39;) is not None:
+                            piece = self.board[i][j]
+                            if piece:
+                                piece_type = piece.__class__.__name__.lower()
+                                piece_color = piece.color
+                                image_path = f&#39;./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png&#39;
+
+                                with square:
+                                    ui.image(image_path).style(&#39;pointer-events: none;&#39;)
+                                    if isinstance(piece, King):
+                                        self.add_king_context_menu(square, piece)
+
+        # Right side container (white captured pieces and white timer)
+        with ui.column().classes(&#39;flex flex-col items-center h-full justify-between&#39;):
+            self.chess_timer.display_white()
+            self.captured_white_grid = ui.grid(columns=4).classes(&#39;w-auto gap-0&#39;).style(
+                &#39;display: grid; grid-template-columns: repeat(4, 1fr); direction: rtl;&#39;
+            )
+
+    self.update_captured_pieces()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.user_chess.Chess.handle_square_click"><code class="name flex">
+<span>def <span class="ident">handle_square_click</span></span>(<span>self, i, j)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_square_click(self, i, j):
+    # [Existing code remains the same]
+    piece = self.board[i][j]
+    piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__) if piece else None
+    if app.storage.user.get(&#39;color&#39;) is None and app.storage.user.get(&#39;game_state_id&#39;) is not None:
+        ui.notify(&#39;Jestes widzem&#39;, color=&#39;red&#39;)
+        return
+
+    if self.start_pos is None:
+        if piece and self.turn == piece.color:
+            self.start_pos = (i, j)
+            ui.notify(f&#39;Wybrano {piece_name_pl}&#39;, color=&#39;blue&#39;)
+        else:
+            ui.notify(&#39;Nie możesz ruszyć tej figury!&#39;, color=&#39;red&#39;)
+    else:
+        start_row, start_col = self.start_pos
+        piece = self.board[start_row][start_col]
+
+        if piece and (i, j) in piece.available_moves(self.board, self.last_move):
+            # Check if piece is not None
+            self.move_piece(start_row, start_col, i, j)
+        else:
+            ui.notify(&#39;Nieprawidłowy ruch!&#39;, color=&#39;red&#39;)
+        self.start_pos = None</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.user_chess.Chess.move_piece"><code class="name flex">
+<span>def <span class="ident">move_piece</span></span>(<span>self, start_row, start_col, end_row, end_col)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def move_piece(self, start_row, start_col, end_row, end_col):
+    # [Existing code with save_game_state added at the end]
+    if not self.chess_timer.timer_running and self.chess_timer.mode:
+        self.chess_timer.timer_running = True
+    piece = self.board[start_row][start_col]
+    target_piece = self.board[end_row][end_col]
+    is_capture = False  # Flag to track captures
+    piece_name_pl = self.PIECE_NAMES_PL.get(piece.__class__.__name__, piece.__class__.__name__)
+    turn_pl = self.TURN_PL.get(self.turn, self.turn)
+
+    if app.storage.user.get(&#39;color&#39;) != self.turn:
+        ui.notify(&#39;Nie twoja kolej!&#39;, color=&#39;red&#39;)
+        return
+
+    # Check if the move is available
+    if (end_row, end_col) not in piece.available_moves(self.board, self.last_move):
+        ui.notify(&#39;Nieprawidłowy ruch!&#39;, color=&#39;red&#39;)
+        return
+
+    # If the piece is a King, ensure the move is safe
+    if isinstance(piece, King):
+        if not self.end_game_class.is_move_safe(start_row, start_col, end_row, end_col):
+            ui.notify(&#39;Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!&#39;, color=&#39;red&#39;)
+            return
+
+    # Simulate the move and check for check
+    original_piece = self.board[end_row][end_col]
+    original_x, original_y = piece.x, piece.y
+
+    piece.x, piece.y = end_row, end_col
+    self.board[end_row][end_col] = piece
+    self.board[start_row][start_col] = None
+
+    if self.end_game_class.isCheck(piece.color):
+        # Undo the simulation
+        self.board[start_row][start_col] = piece
+        self.board[end_row][end_col] = original_piece
+        piece.x, piece.y = original_x, original_y
+        ui.notify(&#39;Nie możesz wykonać tego ruchu, bo twój król będzie w szachu!&#39;, color=&#39;red&#39;)
+        return
+
+    # Restore the move if it was safe
+    self.board[start_row][start_col] = piece
+    self.board[end_row][end_col] = original_piece
+    piece.x, piece.y = original_x, original_y
+
+    # Handle en passant capture
+    if isinstance(piece, Pawn) and start_col != end_col and target_piece is None:
+        captured_pawn = self.board[start_row][end_col]
+        if isinstance(captured_pawn, Pawn) and captured_pawn.color != piece.color:
+            is_capture = True  # Mark en passant capture
+            self.board[start_row][end_col] = None
+            if captured_pawn.color == &#39;white&#39;:
+                self.white_captured.append(captured_pawn)
+            else:
+                self.black_captured.append(captured_pawn)
+            self.update_square(start_row, end_col)
+
+    # Normal capture
+    elif target_piece:
+        is_capture = True  # Mark normal capture
+        if target_piece.color == &#39;white&#39;:
+            self.white_captured.append(target_piece)
+        else:
+            self.black_captured.append(target_piece)
+
+    # Perform the move
+    self.board[start_row][start_col] = None
+    if isinstance(piece, Pawn):
+        piece.move_piece(end_row, end_col, self)
+    else:
+        piece.move_piece(end_row, end_col)
+    self.board[end_row][end_col] = piece
+
+    # Update the board
+    self.update_square(start_row, start_col)
+    self.update_square(end_row, end_col)
+
+    # Change turns
+    self.turn = &#39;black&#39; if self.turn == &#39;white&#39; else &#39;white&#39;
+
+    # Check check after move
+    if self.end_game_class.isCheck(self.turn):
+        if self.end_game_class.isCheckMate(self.turn):
+            self.end_game_class.end(&#39;black&#39; if self.turn == &#39;white&#39; else &#39;white&#39;)
+        else:
+            piece_name = self.PIECE_NAMES_PL[&#34;King&#34;]  # Get the name for &#34;King&#34;
+            turn_name = self.TURN_PL[self.turn]  # Get the name for the turn (&#34;Białych&#34; or &#34;Czarnych&#34;)
+            ui.notify(f&#39;{turn_name} {piece_name} jest w szachu!&#39;, color=&#39;red&#39;)
+    else:
+        # Check for stalemate
+        if self.end_game_class.isStalemate(self.turn):
+            self.end_game_class.end()  # Assume the `end` method handles a draw
+        elif self.end_game_class.is_king_vs_king():
+            self.end_game_class.end()  # Assume the `end` method handles a draw
+        elif self.end_game_class.is_75_move_rule():
+            self.end_game_class.end()  # Assume the `end` method handles a draw
+        else:
+            pass
+
+    # Notification after move piece
+    notation = f&#39;{chr(ord(&#34;a&#34;) + end_col)}{8 - end_row}&#39;
+    ui.notify(f&#39;Przeniesiono {piece_name_pl} na {notation}&#39;, color=&#39;blue&#39;)
+
+    # Update captured pieces
+    self.update_captured_pieces()
+
+    self.last_move = (piece, (start_row, start_col), (end_row, end_col))
+
+    # If the piece is a king, mark it as moved
+    if isinstance(piece, King):
+        piece.has_moved = True
+
+    # Check if it&#39;s a pawn move
+    is_pawn_move = isinstance(piece, Pawn)
+    # Update the move counter for the 75-move rule
+    self.end_game_class.update_move_count(is_capture or is_pawn_move)
+
+    # Save game state after move
+    self.chess_room_management.save_game_state()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.user_chess.Chess.update_board"><code class="name flex">
+<span>def <span class="ident">update_board</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_board(self):
+    for i in range(self.board_row):
+        for j in range(self.board_col):
+            self.update_square(i, j)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.user_chess.Chess.update_captured_pieces"><code class="name flex">
+<span>def <span class="ident">update_captured_pieces</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_captured_pieces(self):
+    # Clear the grids
+    self.captured_white_grid.clear()
+    self.captured_black_grid.clear()
+
+    # Update white captured pieces (right side)
+    with self.captured_white_grid:
+        for piece in reversed(self.white_captured):
+            with ui.element(&#39;div&#39;).style(&#39;width: 80px; height: 80px;&#39;).classes(&#39;m-auto&#39;):
+                piece_type = piece.__class__.__name__.lower()
+                image_path = f&#39;./src/img/white-pieces/{piece_type}-white.png&#39;
+                ui.image(image_path)
+
+    # Update black captured pieces (left side)
+    with self.captured_black_grid:
+        for piece in self.black_captured:
+            with ui.element(&#39;div&#39;).style(&#39;width: 80px; height: 80px;&#39;).classes(&#39;m-auto&#39;):
+                piece_type = piece.__class__.__name__.lower()
+                image_path = f&#39;./src/img/black-pieces/{piece_type}-black.png&#39;
+                ui.image(image_path)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.user_chess.Chess.update_square"><code class="name flex">
+<span>def <span class="ident">update_square</span></span>(<span>self, row, col)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_square(self, row, col):
+    square = self.squares[row][col]
+    square.clear()
+
+    # Calculate reversed row number (8 at the top, 1 at the bottom)
+    reversed_row = self.board_row - row  # Reverse the order of rows (8 -&gt; 1)
+
+    # Recreating the numbering of the fields
+    color = &#39;#769656&#39; if (row + col) % 2 == 0 else &#39;#EEEED2&#39;
+    text_color = &#39;#EEEED2&#39; if color == &#39;#769656&#39; else &#39;#769656&#39;
+    with square:
+        ui.label(f&#39;{chr(ord(&#34;a&#34;) + col)}{reversed_row}&#39;).style(
+            f&#39;position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};&#39;)
+
+    piece = self.board[row][col]
+    if piece:
+        piece_type = piece.__class__.__name__.lower()
+        piece_color = piece.color
+        # Updated image path to match your directory structure
+        image_path = f&#39;./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png&#39;
+
+        with square:
+            ui.image(image_path).style(&#39;pointer-events: none;&#39;)
+            if isinstance(piece, King):
+                self.add_king_context_menu(square, piece)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.ui.components" href="index.html">src.ui.components</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.ui.components.user_chess.Chess" href="#src.ui.components.user_chess.Chess">Chess</a></code></h4>
+<ul class="">
+<li><code><a title="src.ui.components.user_chess.Chess.add_king_context_menu" href="#src.ui.components.user_chess.Chess.add_king_context_menu">add_king_context_menu</a></code></li>
+<li><code><a title="src.ui.components.user_chess.Chess.create_chessboard" href="#src.ui.components.user_chess.Chess.create_chessboard">create_chessboard</a></code></li>
+<li><code><a title="src.ui.components.user_chess.Chess.handle_square_click" href="#src.ui.components.user_chess.Chess.handle_square_click">handle_square_click</a></code></li>
+<li><code><a title="src.ui.components.user_chess.Chess.move_piece" href="#src.ui.components.user_chess.Chess.move_piece">move_piece</a></code></li>
+<li><code><a title="src.ui.components.user_chess.Chess.update_board" href="#src.ui.components.user_chess.Chess.update_board">update_board</a></code></li>
+<li><code><a title="src.ui.components.user_chess.Chess.update_captured_pieces" href="#src.ui.components.user_chess.Chess.update_captured_pieces">update_captured_pieces</a></code></li>
+<li><code><a title="src.ui.components.user_chess.Chess.update_square" href="#src.ui.components.user_chess.Chess.update_square">update_square</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

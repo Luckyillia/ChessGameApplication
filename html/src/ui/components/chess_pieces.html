@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>src.ui.components.chess_pieces API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.ui.components.chess_pieces</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.ui.components.chess_pieces.Bishop"><code class="flex name class">
+<span>class <span class="ident">Bishop</span></span>
+<span>(</span><span>color, x, y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Bishop(Piece):
+    def available_moves(self, board, last_move):
+        moves = []
+        for dx, dy in [(1, 1), (1, -1), (-1, 1), (-1, -1)]:
+            x, y = self.x, self.y
+            while 0 &lt;= x + dx &lt; 8 and 0 &lt;= y + dy &lt; 8:
+                x += dx
+                y += dy
+                if board[x][y] is None:
+                    moves.append((x, y))
+                elif board[x][y].color != self.color:
+                    moves.append((x, y))
+                    break
+                else:
+                    break
+        return moves</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.ui.components.chess_pieces.Piece" href="#src.ui.components.chess_pieces.Piece">Piece</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_pieces.Bishop.available_moves"><code class="name flex">
+<span>def <span class="ident">available_moves</span></span>(<span>self, board, last_move)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def available_moves(self, board, last_move):
+    moves = []
+    for dx, dy in [(1, 1), (1, -1), (-1, 1), (-1, -1)]:
+        x, y = self.x, self.y
+        while 0 &lt;= x + dx &lt; 8 and 0 &lt;= y + dy &lt; 8:
+            x += dx
+            y += dy
+            if board[x][y] is None:
+                moves.append((x, y))
+            elif board[x][y].color != self.color:
+                moves.append((x, y))
+                break
+            else:
+                break
+    return moves</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.ui.components.chess_pieces.King"><code class="flex name class">
+<span>class <span class="ident">King</span></span>
+<span>(</span><span>color, x, y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class King(Piece):
+    def __init__(self, color, x, y):
+        super().__init__(color, x, y)
+        self.has_moved = False  # Track if the king has moved
+
+    def available_moves(self, board, last_move):
+        moves = []
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx == 0 and dy == 0:
+                    continue  # Skip current position
+                new_x = self.x + dx
+                new_y = self.y + dy
+                if 0 &lt;= new_x &lt; 8 and 0 &lt;= new_y &lt; 8:
+                    target = board[new_x][new_y]
+                    if target is None or target.color != self.color:  # Only empty or enemy pieces
+                        moves.append((new_x, new_y))
+        return moves</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.ui.components.chess_pieces.Piece" href="#src.ui.components.chess_pieces.Piece">Piece</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_pieces.King.available_moves"><code class="name flex">
+<span>def <span class="ident">available_moves</span></span>(<span>self, board, last_move)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def available_moves(self, board, last_move):
+    moves = []
+    for dx in [-1, 0, 1]:
+        for dy in [-1, 0, 1]:
+            if dx == 0 and dy == 0:
+                continue  # Skip current position
+            new_x = self.x + dx
+            new_y = self.y + dy
+            if 0 &lt;= new_x &lt; 8 and 0 &lt;= new_y &lt; 8:
+                target = board[new_x][new_y]
+                if target is None or target.color != self.color:  # Only empty or enemy pieces
+                    moves.append((new_x, new_y))
+    return moves</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.ui.components.chess_pieces.Knight"><code class="flex name class">
+<span>class <span class="ident">Knight</span></span>
+<span>(</span><span>color, x, y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Knight(Piece):
+    def available_moves(self, board, last_move):
+        moves = []
+        for dx, dy in [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)]:
+            x, y = self.x + dx, self.y + dy
+            if 0 &lt;= x &lt; 8 and 0 &lt;= y &lt; 8:
+                target = board[x][y]
+                if target is None or target.color != self.color:
+                    moves.append((x, y))
+        return moves</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.ui.components.chess_pieces.Piece" href="#src.ui.components.chess_pieces.Piece">Piece</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_pieces.Knight.available_moves"><code class="name flex">
+<span>def <span class="ident">available_moves</span></span>(<span>self, board, last_move)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def available_moves(self, board, last_move):
+    moves = []
+    for dx, dy in [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)]:
+        x, y = self.x + dx, self.y + dy
+        if 0 &lt;= x &lt; 8 and 0 &lt;= y &lt; 8:
+            target = board[x][y]
+            if target is None or target.color != self.color:
+                moves.append((x, y))
+    return moves</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.ui.components.chess_pieces.Pawn"><code class="flex name class">
+<span>class <span class="ident">Pawn</span></span>
+<span>(</span><span>color, x, y, is_moved=False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Pawn(Piece):
+    def __init__(self, color, x, y, is_moved=False):
+        super().__init__(color, x, y)
+        self.has_moved = is_moved
+
+    def available_moves(self, board, last_move):
+        moves = []
+        direction = 1 if self.color == &#39;white&#39; else -1
+        start_row = 1 if self.color == &#39;white&#39; else 6
+        en_passant_row = 4 if self.color == &#39;white&#39; else 3
+
+        if 0 &lt;= self.x + direction &lt; 8 and board[self.x + direction][self.y] is None:
+            moves.append((self.x + direction, self.y))
+
+            if not self.has_moved and 0 &lt;= self.x + 2 * direction &lt; 8 and board[self.x + 2 * direction][self.y] is None:
+                moves.append((self.x + 2 * direction, self.y))
+
+        for dy in [-1, 1]:
+            if 0 &lt;= self.y + dy &lt; 8 and 0 &lt;= self.x + direction &lt; 8:
+                target = board[self.x + direction][self.y + dy]
+                if target and target.color != self.color:
+                    moves.append((self.x + direction, self.y + dy))
+
+        # En passant logic
+        if self.x == en_passant_row and last_move:
+            last_piece, (old_x, old_y), (new_x, new_y) = last_move
+            if isinstance(last_piece, Pawn) and last_piece.color != self.color:
+                if abs(old_x - new_x) == 2 and new_x == self.x and abs(new_y - self.y) == 1:
+                    moves.append((self.x + direction, new_y))
+
+        return moves
+
+    def move_piece(self, new_x, new_y, chess):
+        &#34;&#34;&#34;Moves the pawn and handles promotion if applicable.&#34;&#34;&#34;
+        self.x = new_x
+        self.y = new_y
+        self.has_moved = True
+        if (self.color == &#39;white&#39; and self.x == 7) or (self.color == &#39;black&#39; and self.x == 0):
+            if self.promote_pawn(chess):
+                return True
+
+    def promote_pawn(self, chess):
+        &#34;&#34;&#34;Handles pawn promotion to a selected piece.&#34;&#34;&#34;
+        def select_promotion(piece_name):
+            piece_classes = {&#39;Queen&#39;: Queen, &#39;Rook&#39;: Rook, &#39;Bishop&#39;: Bishop, &#39;Knight&#39;: Knight}
+            chess.board[self.x][self.y] = piece_classes[piece_name](self.color, self.x, self.y)
+            # Correctly display the translated name for the selected piece
+            ui.notify(f&#34;Pionek promowany na {chess.PIECE_NAMES_PL[piece_name]}!&#34;, color=&#39;green&#39;)
+            dialog.close()
+            chess.chess_room_management.save_game_state()
+            chess.update_square(self.x, self.y)
+
+        with ui.dialog() as dialog, ui.card():
+            ui.label(&#39;Promote your pawn&#39;).classes(&#39;text-xl font-bold&#39;)
+            with ui.row():
+                for strname in [&#39;Queen&#39;, &#39;Rook&#39;, &#39;Bishop&#39;, &#39;Knight&#39;]:
+                    ui.button(strname, on_click=lambda name=strname: select_promotion(name)).classes(&#39;m-2&#39;)
+        dialog.open()</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.ui.components.chess_pieces.Piece" href="#src.ui.components.chess_pieces.Piece">Piece</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_pieces.Pawn.available_moves"><code class="name flex">
+<span>def <span class="ident">available_moves</span></span>(<span>self, board, last_move)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def available_moves(self, board, last_move):
+    moves = []
+    direction = 1 if self.color == &#39;white&#39; else -1
+    start_row = 1 if self.color == &#39;white&#39; else 6
+    en_passant_row = 4 if self.color == &#39;white&#39; else 3
+
+    if 0 &lt;= self.x + direction &lt; 8 and board[self.x + direction][self.y] is None:
+        moves.append((self.x + direction, self.y))
+
+        if not self.has_moved and 0 &lt;= self.x + 2 * direction &lt; 8 and board[self.x + 2 * direction][self.y] is None:
+            moves.append((self.x + 2 * direction, self.y))
+
+    for dy in [-1, 1]:
+        if 0 &lt;= self.y + dy &lt; 8 and 0 &lt;= self.x + direction &lt; 8:
+            target = board[self.x + direction][self.y + dy]
+            if target and target.color != self.color:
+                moves.append((self.x + direction, self.y + dy))
+
+    # En passant logic
+    if self.x == en_passant_row and last_move:
+        last_piece, (old_x, old_y), (new_x, new_y) = last_move
+        if isinstance(last_piece, Pawn) and last_piece.color != self.color:
+            if abs(old_x - new_x) == 2 and new_x == self.x and abs(new_y - self.y) == 1:
+                moves.append((self.x + direction, new_y))
+
+    return moves</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.chess_pieces.Pawn.move_piece"><code class="name flex">
+<span>def <span class="ident">move_piece</span></span>(<span>self, new_x, new_y, chess)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def move_piece(self, new_x, new_y, chess):
+    &#34;&#34;&#34;Moves the pawn and handles promotion if applicable.&#34;&#34;&#34;
+    self.x = new_x
+    self.y = new_y
+    self.has_moved = True
+    if (self.color == &#39;white&#39; and self.x == 7) or (self.color == &#39;black&#39; and self.x == 0):
+        if self.promote_pawn(chess):
+            return True</code></pre>
+</details>
+<div class="desc"><p>Moves the pawn and handles promotion if applicable.</p></div>
+</dd>
+<dt id="src.ui.components.chess_pieces.Pawn.promote_pawn"><code class="name flex">
+<span>def <span class="ident">promote_pawn</span></span>(<span>self, chess)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def promote_pawn(self, chess):
+    &#34;&#34;&#34;Handles pawn promotion to a selected piece.&#34;&#34;&#34;
+    def select_promotion(piece_name):
+        piece_classes = {&#39;Queen&#39;: Queen, &#39;Rook&#39;: Rook, &#39;Bishop&#39;: Bishop, &#39;Knight&#39;: Knight}
+        chess.board[self.x][self.y] = piece_classes[piece_name](self.color, self.x, self.y)
+        # Correctly display the translated name for the selected piece
+        ui.notify(f&#34;Pionek promowany na {chess.PIECE_NAMES_PL[piece_name]}!&#34;, color=&#39;green&#39;)
+        dialog.close()
+        chess.chess_room_management.save_game_state()
+        chess.update_square(self.x, self.y)
+
+    with ui.dialog() as dialog, ui.card():
+        ui.label(&#39;Promote your pawn&#39;).classes(&#39;text-xl font-bold&#39;)
+        with ui.row():
+            for strname in [&#39;Queen&#39;, &#39;Rook&#39;, &#39;Bishop&#39;, &#39;Knight&#39;]:
+                ui.button(strname, on_click=lambda name=strname: select_promotion(name)).classes(&#39;m-2&#39;)
+    dialog.open()</code></pre>
+</details>
+<div class="desc"><p>Handles pawn promotion to a selected piece.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.ui.components.chess_pieces.Piece"><code class="flex name class">
+<span>class <span class="ident">Piece</span></span>
+<span>(</span><span>color, x, y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Piece:
+    def __init__(self, color, x, y):
+        self.color = color
+        self.x = x
+        self.y = y
+
+    def available_moves(self, board, last_move):
+        raise NotImplementedError
+
+    def move_piece(self, new_x, new_y):
+        self.x = new_x
+        self.y = new_y</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="src.ui.components.chess_pieces.Bishop" href="#src.ui.components.chess_pieces.Bishop">Bishop</a></li>
+<li><a title="src.ui.components.chess_pieces.King" href="#src.ui.components.chess_pieces.King">King</a></li>
+<li><a title="src.ui.components.chess_pieces.Knight" href="#src.ui.components.chess_pieces.Knight">Knight</a></li>
+<li><a title="src.ui.components.chess_pieces.Pawn" href="#src.ui.components.chess_pieces.Pawn">Pawn</a></li>
+<li><a title="src.ui.components.chess_pieces.Queen" href="#src.ui.components.chess_pieces.Queen">Queen</a></li>
+<li><a title="src.ui.components.chess_pieces.Rook" href="#src.ui.components.chess_pieces.Rook">Rook</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_pieces.Piece.available_moves"><code class="name flex">
+<span>def <span class="ident">available_moves</span></span>(<span>self, board, last_move)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def available_moves(self, board, last_move):
+    raise NotImplementedError</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.chess_pieces.Piece.move_piece"><code class="name flex">
+<span>def <span class="ident">move_piece</span></span>(<span>self, new_x, new_y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def move_piece(self, new_x, new_y):
+    self.x = new_x
+    self.y = new_y</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.ui.components.chess_pieces.Queen"><code class="flex name class">
+<span>class <span class="ident">Queen</span></span>
+<span>(</span><span>color, x, y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Queen(Piece):
+    def available_moves(self, board, last_move):
+        moves = []
+        moves.extend(Rook(self.color, self.x, self.y).available_moves(board, last_move))
+        moves.extend(Bishop(self.color, self.x, self.y).available_moves(board, last_move))
+        return moves</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.ui.components.chess_pieces.Piece" href="#src.ui.components.chess_pieces.Piece">Piece</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_pieces.Queen.available_moves"><code class="name flex">
+<span>def <span class="ident">available_moves</span></span>(<span>self, board, last_move)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def available_moves(self, board, last_move):
+    moves = []
+    moves.extend(Rook(self.color, self.x, self.y).available_moves(board, last_move))
+    moves.extend(Bishop(self.color, self.x, self.y).available_moves(board, last_move))
+    return moves</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="src.ui.components.chess_pieces.Rook"><code class="flex name class">
+<span>class <span class="ident">Rook</span></span>
+<span>(</span><span>color, x, y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Rook(Piece):
+    def __init__(self, color, x, y):
+        super().__init__(color, x, y)
+        self.has_moved = False  # Flag to track if the rook has moved
+
+    def move_piece(self, new_x, new_y):
+        if not self.has_moved:
+            self.has_moved = True  # Mark as moved
+        self.x, self.y = new_x, new_y
+
+    def available_moves(self, board, last_move):
+        moves = []
+        for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            x, y = self.x, self.y
+            while 0 &lt;= x + dx &lt; 8 and 0 &lt;= y + dy &lt; 8:
+                x += dx
+                y += dy
+                if board[x][y] is None:
+                    moves.append((x, y))
+                elif board[x][y].color != self.color:
+                    moves.append((x, y))
+                    break
+                else:
+                    break
+        return moves</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.ui.components.chess_pieces.Piece" href="#src.ui.components.chess_pieces.Piece">Piece</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_pieces.Rook.available_moves"><code class="name flex">
+<span>def <span class="ident">available_moves</span></span>(<span>self, board, last_move)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def available_moves(self, board, last_move):
+    moves = []
+    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+        x, y = self.x, self.y
+        while 0 &lt;= x + dx &lt; 8 and 0 &lt;= y + dy &lt; 8:
+            x += dx
+            y += dy
+            if board[x][y] is None:
+                moves.append((x, y))
+            elif board[x][y].color != self.color:
+                moves.append((x, y))
+                break
+            else:
+                break
+    return moves</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.chess_pieces.Rook.move_piece"><code class="name flex">
+<span>def <span class="ident">move_piece</span></span>(<span>self, new_x, new_y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def move_piece(self, new_x, new_y):
+    if not self.has_moved:
+        self.has_moved = True  # Mark as moved
+    self.x, self.y = new_x, new_y</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.ui.components" href="index.html">src.ui.components</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.ui.components.chess_pieces.Bishop" href="#src.ui.components.chess_pieces.Bishop">Bishop</a></code></h4>
+<ul class="">
+<li><code><a title="src.ui.components.chess_pieces.Bishop.available_moves" href="#src.ui.components.chess_pieces.Bishop.available_moves">available_moves</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.ui.components.chess_pieces.King" href="#src.ui.components.chess_pieces.King">King</a></code></h4>
+<ul class="">
+<li><code><a title="src.ui.components.chess_pieces.King.available_moves" href="#src.ui.components.chess_pieces.King.available_moves">available_moves</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.ui.components.chess_pieces.Knight" href="#src.ui.components.chess_pieces.Knight">Knight</a></code></h4>
+<ul class="">
+<li><code><a title="src.ui.components.chess_pieces.Knight.available_moves" href="#src.ui.components.chess_pieces.Knight.available_moves">available_moves</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.ui.components.chess_pieces.Pawn" href="#src.ui.components.chess_pieces.Pawn">Pawn</a></code></h4>
+<ul class="">
+<li><code><a title="src.ui.components.chess_pieces.Pawn.available_moves" href="#src.ui.components.chess_pieces.Pawn.available_moves">available_moves</a></code></li>
+<li><code><a title="src.ui.components.chess_pieces.Pawn.move_piece" href="#src.ui.components.chess_pieces.Pawn.move_piece">move_piece</a></code></li>
+<li><code><a title="src.ui.components.chess_pieces.Pawn.promote_pawn" href="#src.ui.components.chess_pieces.Pawn.promote_pawn">promote_pawn</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.ui.components.chess_pieces.Piece" href="#src.ui.components.chess_pieces.Piece">Piece</a></code></h4>
+<ul class="">
+<li><code><a title="src.ui.components.chess_pieces.Piece.available_moves" href="#src.ui.components.chess_pieces.Piece.available_moves">available_moves</a></code></li>
+<li><code><a title="src.ui.components.chess_pieces.Piece.move_piece" href="#src.ui.components.chess_pieces.Piece.move_piece">move_piece</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.ui.components.chess_pieces.Queen" href="#src.ui.components.chess_pieces.Queen">Queen</a></code></h4>
+<ul class="">
+<li><code><a title="src.ui.components.chess_pieces.Queen.available_moves" href="#src.ui.components.chess_pieces.Queen.available_moves">available_moves</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.ui.components.chess_pieces.Rook" href="#src.ui.components.chess_pieces.Rook">Rook</a></code></h4>
+<ul class="">
+<li><code><a title="src.ui.components.chess_pieces.Rook.available_moves" href="#src.ui.components.chess_pieces.Rook.available_moves">available_moves</a></code></li>
+<li><code><a title="src.ui.components.chess_pieces.Rook.move_piece" href="#src.ui.components.chess_pieces.Rook.move_piece">move_piece</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

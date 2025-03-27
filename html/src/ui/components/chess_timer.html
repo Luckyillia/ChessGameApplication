@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>src.ui.components.chess_timer API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.ui.components.chess_timer</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.ui.components.chess_timer.ChessTimer"><code class="flex name class">
+<span>class <span class="ident">ChessTimer</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ChessTimer:
+    def __init__(self):
+        self.white_time = 0  # in seconds
+        self.black_time = 0  # in seconds
+        self.timer_running = False
+        self.mode = False  # False = no timer, True = timed game
+
+        # Timer display elements
+        self.white_display = None
+        self.black_display = None
+
+        # Timer mode selection dialog
+        self.mode_dialog = ui.dialog().classes(&#39;w-96&#39;)
+        with self.mode_dialog, ui.card().classes(&#39;w-full gap-4 p-4&#39;):
+            ui.label(&#39;Wybierz tryb gry&#39;).classes(&#39;text-h6 text-center&#39;)
+            self.white_time_input = ui.number(&#39;Czas dla białych (minuty)&#39;, value=5, min=1, max=60).classes(&#39;w-full&#39;)
+            self.black_time_input = ui.number(&#39;Czas dla czarnych (minuty)&#39;, value=5, min=1, max=60).classes(&#39;w-full&#39;)
+            ui.button(&#39;Graj z czasem&#39;, on_click=self.start_timed_game).classes(&#39;w-full&#39;)
+            ui.button(&#39;Graj bez czasu&#39;, on_click=self.start_untimed_game).classes(&#39;w-full&#39;)
+
+    def update_time(self, turn):
+        if self.timer_running and self.mode:
+            if turn == &#39;white&#39;:
+                self.white_time -= 1
+            elif turn == &#39;black&#39;:
+                self.black_time -= 1
+
+            # Update displays
+            white_str, black_str = self.formated_time()
+            self.white_display.text = f&#39;White: {white_str}&#39;
+            self.black_display.text = f&#39;Black: {black_str}&#39;
+
+            # Check for timeout
+            if self.white_time &lt;= 0:
+                return &#39;black_wins&#39;
+            if self.black_time &lt;= 0:
+                return &#39;white_wins&#39;
+        return None
+
+    def formated_time(self):
+        &#34;&#34;&#34;Format time as MM:SS&#34;&#34;&#34;
+        white_time = f&#34;{self.white_time // 60:02d}:{self.white_time % 60:02d}&#34;
+        black_time = f&#34;{self.black_time // 60:02d}:{self.black_time % 60:02d}&#34;
+        return white_time, black_time
+
+    def start_timed_game(self):
+        &#34;&#34;&#34;Start a new timed game&#34;&#34;&#34;
+        self.white_time = int(self.white_time_input.value) * 60
+        self.black_time = int(self.black_time_input.value) * 60
+        self.mode = True
+        self.mode_dialog.close()
+        white_str, black_str = self.formated_time()
+        self.white_display.text = f&#39;White: {white_str}&#39;
+        self.black_display.text = f&#39;Black: {black_str}&#39;
+
+    def start_untimed_game(self):
+        &#34;&#34;&#34;Start a game without timer&#34;&#34;&#34;
+        self.mode = False
+        self.timer_running = False
+        self.mode_dialog.close()
+        self.white_display.text = &#39;White: --:--&#39;
+        self.black_display.text = &#39;Black: --:--&#39;
+
+    def reset_timer(self):
+        &#34;&#34;&#34;Reset the timer to initial state&#34;&#34;&#34;
+        self.timer_running = False
+        self.white_time = 0
+        self.black_time = 0
+        self.white_display.text = &#39;White: --:--&#39;
+        self.black_display.text = &#39;Black: --:--&#39;
+
+    def display_white(self):
+        # Initialize timer displays with proper styling
+        self.white_display = ui.label(&#39;White: --:--&#39;).classes(&#39;text-xl font-bold mb-4&#39;)
+
+    def display_black(self):
+        # Initialize timer displays with proper styling
+        self.black_display = ui.label(&#39;Black: --:--&#39;).classes(&#39;text-xl font-bold mb-4&#39;)</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="src.ui.components.chess_timer.ChessTimer.display_black"><code class="name flex">
+<span>def <span class="ident">display_black</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_black(self):
+    # Initialize timer displays with proper styling
+    self.black_display = ui.label(&#39;Black: --:--&#39;).classes(&#39;text-xl font-bold mb-4&#39;)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.chess_timer.ChessTimer.display_white"><code class="name flex">
+<span>def <span class="ident">display_white</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_white(self):
+    # Initialize timer displays with proper styling
+    self.white_display = ui.label(&#39;White: --:--&#39;).classes(&#39;text-xl font-bold mb-4&#39;)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="src.ui.components.chess_timer.ChessTimer.formated_time"><code class="name flex">
+<span>def <span class="ident">formated_time</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def formated_time(self):
+    &#34;&#34;&#34;Format time as MM:SS&#34;&#34;&#34;
+    white_time = f&#34;{self.white_time // 60:02d}:{self.white_time % 60:02d}&#34;
+    black_time = f&#34;{self.black_time // 60:02d}:{self.black_time % 60:02d}&#34;
+    return white_time, black_time</code></pre>
+</details>
+<div class="desc"><p>Format time as MM:SS</p></div>
+</dd>
+<dt id="src.ui.components.chess_timer.ChessTimer.reset_timer"><code class="name flex">
+<span>def <span class="ident">reset_timer</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reset_timer(self):
+    &#34;&#34;&#34;Reset the timer to initial state&#34;&#34;&#34;
+    self.timer_running = False
+    self.white_time = 0
+    self.black_time = 0
+    self.white_display.text = &#39;White: --:--&#39;
+    self.black_display.text = &#39;Black: --:--&#39;</code></pre>
+</details>
+<div class="desc"><p>Reset the timer to initial state</p></div>
+</dd>
+<dt id="src.ui.components.chess_timer.ChessTimer.start_timed_game"><code class="name flex">
+<span>def <span class="ident">start_timed_game</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start_timed_game(self):
+    &#34;&#34;&#34;Start a new timed game&#34;&#34;&#34;
+    self.white_time = int(self.white_time_input.value) * 60
+    self.black_time = int(self.black_time_input.value) * 60
+    self.mode = True
+    self.mode_dialog.close()
+    white_str, black_str = self.formated_time()
+    self.white_display.text = f&#39;White: {white_str}&#39;
+    self.black_display.text = f&#39;Black: {black_str}&#39;</code></pre>
+</details>
+<div class="desc"><p>Start a new timed game</p></div>
+</dd>
+<dt id="src.ui.components.chess_timer.ChessTimer.start_untimed_game"><code class="name flex">
+<span>def <span class="ident">start_untimed_game</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start_untimed_game(self):
+    &#34;&#34;&#34;Start a game without timer&#34;&#34;&#34;
+    self.mode = False
+    self.timer_running = False
+    self.mode_dialog.close()
+    self.white_display.text = &#39;White: --:--&#39;
+    self.black_display.text = &#39;Black: --:--&#39;</code></pre>
+</details>
+<div class="desc"><p>Start a game without timer</p></div>
+</dd>
+<dt id="src.ui.components.chess_timer.ChessTimer.update_time"><code class="name flex">
+<span>def <span class="ident">update_time</span></span>(<span>self, turn)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_time(self, turn):
+    if self.timer_running and self.mode:
+        if turn == &#39;white&#39;:
+            self.white_time -= 1
+        elif turn == &#39;black&#39;:
+            self.black_time -= 1
+
+        # Update displays
+        white_str, black_str = self.formated_time()
+        self.white_display.text = f&#39;White: {white_str}&#39;
+        self.black_display.text = f&#39;Black: {black_str}&#39;
+
+        # Check for timeout
+        if self.white_time &lt;= 0:
+            return &#39;black_wins&#39;
+        if self.black_time &lt;= 0:
+            return &#39;white_wins&#39;
+    return None</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.ui.components" href="index.html">src.ui.components</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.ui.components.chess_timer.ChessTimer" href="#src.ui.components.chess_timer.ChessTimer">ChessTimer</a></code></h4>
+<ul class="two-column">
+<li><code><a title="src.ui.components.chess_timer.ChessTimer.display_black" href="#src.ui.components.chess_timer.ChessTimer.display_black">display_black</a></code></li>
+<li><code><a title="src.ui.components.chess_timer.ChessTimer.display_white" href="#src.ui.components.chess_timer.ChessTimer.display_white">display_white</a></code></li>
+<li><code><a title="src.ui.components.chess_timer.ChessTimer.formated_time" href="#src.ui.components.chess_timer.ChessTimer.formated_time">formated_time</a></code></li>
+<li><code><a title="src.ui.components.chess_timer.ChessTimer.reset_timer" href="#src.ui.components.chess_timer.ChessTimer.reset_timer">reset_timer</a></code></li>
+<li><code><a title="src.ui.components.chess_timer.ChessTimer.start_timed_game" href="#src.ui.components.chess_timer.ChessTimer.start_timed_game">start_timed_game</a></code></li>
+<li><code><a title="src.ui.components.chess_timer.ChessTimer.start_untimed_game" href="#src.ui.components.chess_timer.ChessTimer.start_untimed_game">start_untimed_game</a></code></li>
+<li><code><a title="src.ui.components.chess_timer.ChessTimer.update_time" href="#src.ui.components.chess_timer.ChessTimer.update_time">update_time</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

@@ -157,7 +157,7 @@ class GameStateService:
         self.save_game_state(game_state_id, empty_state)
         return game_state_id
 
-    def restart_game_state(self, game_state_id ,chess_room_management):
+    def restart_game_state(self, game_state_id ,chess_room_management, chess):
         """Restart a game state by its ID"""
         try:
             with open(self.file_name, 'r', encoding='utf-8') as file:
@@ -175,6 +175,7 @@ class GameStateService:
                 "last_move": None,
                 "timestamp": time.time()
             }
+            chess.chess_timer.mode_dialog.open()
             self.save_game_state(game_state_id, game_states[game_state_id])
             return True
         except Exception as e:

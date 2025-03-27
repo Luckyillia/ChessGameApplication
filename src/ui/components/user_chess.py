@@ -64,44 +64,51 @@ class Chess:
                 ui.button('Zamknij', on_click=lambda: [self.menu.open(), room_dialog.close()])
             room_dialog.open()
 
-        self.grid = ui.grid(columns=8).classes('w-auto m-auto gap-0')
+        # Main container for the chessboard and side elements
+        with ui.row().classes('w-full justify-center items-center'):
+            # Left side container (black captured pieces and black timer)
+            with ui.column().classes('flex flex-col items-center h-full justify-between'):
+                self.chess_timer.display_black()
+                self.captured_black_grid = ui.grid(columns=4).classes('w-auto gap-0').style(
+                    'display: grid; grid-template-columns: repeat(4, 1fr);'
+                )
 
-        # Create chessboard
-        with self.grid:
-            for i in range(self.board_row):
-                for j in range(self.board_col):
-                    # Estimate background color
-                    color = '#769656' if (i + j) % 2 == 0 else '#EEEED2'
-                    # Estimate text color
-                    text_color = '#EEEED2' if color == '#769656' else '#769656'
+            # Chessboard
+            self.grid = ui.grid(columns=8).classes('w-auto m-auto gap-0')
+            with self.grid:
+                for i in range(self.board_row):
+                    for j in range(self.board_col):
+                        color = '#769656' if (i + j) % 2 == 0 else '#EEEED2'
+                        text_color = '#EEEED2' if color == '#769656' else '#769656'
+                        reversed_row = self.board_row - i
 
-                    # Calculate reversed row number (8 at the top, 1 at the bottom)
-                    reversed_row = self.board_row - i  # Reverse the order of rows (8 -> 1)
+                        with ui.element('div').style(
+                                f'background-color: {color}; width: 100px; height: 100px; position: relative;').on(
+                            'click', partial(self.handle_square_click, i, j)) as square:
 
-                    # Make the background div non-interactive
-                    with ui.element('div').style(
-                            f'background-color: {color}; width: 100px; height: 100px; position: relative;').on(
-                        'click', partial(self.handle_square_click, i, j)) as square:
+                            ui.label(f'{chr(ord("a") + j)}{reversed_row}').style(
+                                f'position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};')
 
-                        # Add the label with the column letter first and then the reversed row number
-                        ui.label(f'{chr(ord("a") + j)}{reversed_row}').style(
-                            f'position: absolute; top: 2px; right: 2px; font-size: 10px; color: {text_color};')
+                            self.squares[i][j] = square
+                            if app.storage.user.get('game_state_id') is not None:
+                                piece = self.board[i][j]
+                                if piece:
+                                    piece_type = piece.__class__.__name__.lower()
+                                    piece_color = piece.color
+                                    image_path = f'./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png'
 
-                        self.squares[i][j] = square
-                        if app.storage.user.get('game_state_id') is not None:
-                            piece = self.board[i][j]
-                            if piece:
-                                piece_type = piece.__class__.__name__.lower()
-                                piece_color = piece.color
-                                # Updated image path to match your directory structure
-                                image_path = f'./src/img/{piece_color}-pieces/{piece_type}-{piece_color}.png'
+                                    with square:
+                                        ui.image(image_path).style('pointer-events: none;')
+                                        if isinstance(piece, King):
+                                            self.add_king_context_menu(square, piece)
 
-                                # Make the chess pieces interactive
-                                with square:
-                                    ui.image(image_path).style('pointer-events: none;')
-                                    # Allow clicks on the piece image
-                                    if isinstance(piece, King):
-                                        self.add_king_context_menu(square, piece)
+            # Right side container (white captured pieces and white timer)
+            with ui.column().classes('flex flex-col items-center h-full justify-between'):
+                self.chess_timer.display_white()
+                self.captured_white_grid = ui.grid(columns=4).classes('w-auto gap-0').style(
+                    'display: grid; grid-template-columns: repeat(4, 1fr); direction: rtl;'
+                )
+
         self.update_captured_pieces()
 
     def handle_square_click(self, i, j):
@@ -284,31 +291,23 @@ class Chess:
                     self.add_king_context_menu(square, piece)
 
     def update_captured_pieces(self):
-        if not hasattr(self, 'captured_white_grid'):
-            self.captured_white_grid = ui.grid(columns=4).classes('w-auto m-auto gap-0').style(
-                'position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: grid; grid-template-columns: repeat(4, 1fr); direction: rtl;'
-            )
-        if not hasattr(self, 'captured_black_grid'):
-            self.captured_black_grid = ui.grid(columns=4).classes('w-auto m-auto gap-0').style(
-                'position: absolute; top: 50%; left: 0; transform: translateY(-50%);'
-            )
-
+        # Clear the grids
         self.captured_white_grid.clear()
         self.captured_black_grid.clear()
 
+        # Update white captured pieces (right side)
         with self.captured_white_grid:
             for piece in reversed(self.white_captured):
                 with ui.element('div').style('width: 80px; height: 80px;').classes('m-auto'):
                     piece_type = piece.__class__.__name__.lower()
-                    # Updated image path to match your directory structure
                     image_path = f'./src/img/white-pieces/{piece_type}-white.png'
                     ui.image(image_path)
 
+        # Update black captured pieces (left side)
         with self.captured_black_grid:
             for piece in self.black_captured:
                 with ui.element('div').style('width: 80px; height: 80px;').classes('m-auto'):
                     piece_type = piece.__class__.__name__.lower()
-                    # Updated image path to match your directory structure
                     image_path = f'./src/img/black-pieces/{piece_type}-black.png'
                     ui.image(image_path)
 
