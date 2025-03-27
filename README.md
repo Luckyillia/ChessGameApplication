@@ -140,8 +140,8 @@ ChessGame/
 ### Installation Steps
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd chess-game-application
+   git clone https://gitlab.makolab.net/interns/cc/niceguidemo.git
+   cd cd .\niceguidemo\
    ```
 
 2. (Optional) Create a virtual environment to isolate dependencies:
