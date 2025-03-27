@@ -61,6 +61,9 @@ class ChessRoomManagement:
                 self.chess.last_move = (piece, start_pos, end_pos)
             else:
                 self.chess.last_move = None
+
+            if game_state.get('timer'):
+                self.chess.chess_timer.set_time(game_state['timer'])
     def get_users(self, game_state_id):
         users = self.game_state_service.load_game_state(game_state_id)
         return users['users']
@@ -89,7 +92,8 @@ class ChessRoomManagement:
             'captured_white': self.serialize_pieces(self.chess.white_captured),
             'captured_black': self.serialize_pieces(self.chess.black_captured),
             'turn': self.chess.turn,
-            'timestamp': time.time()
+            'timestamp': time.time(),
+            'timer': self.chess.chess_timer.get_time()
         }
 
         # Save last move if it exists

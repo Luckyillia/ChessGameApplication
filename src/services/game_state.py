@@ -152,7 +152,8 @@ class GameStateService:
             "captured_black": [],
             "turn": "white",
             "last_move": None,
-            "timestamp": time.time()
+            "timestamp": time.time(),
+            "timer": None
         }
         self.save_game_state(game_state_id, empty_state)
         return game_state_id
@@ -173,7 +174,8 @@ class GameStateService:
                 "captured_black": [],
                 "turn": "white",
                 "last_move": None,
-                "timestamp": time.time()
+                "timestamp": time.time(),
+                'timer': None
             }
             chess.chess_timer.mode_dialog.open()
             self.save_game_state(game_state_id, game_states[game_state_id])

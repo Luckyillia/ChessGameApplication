@@ -20,7 +20,7 @@ class Chess:
         self.board_class = ChessBoard()
         self.end_game_class = ChessEndgame(self)
         self.handling_castling = ChessCastling(self)
-        self.chess_timer = None
+        self.chess_timer = ChessTimer()
         self.chess_room_management = ChessRoomManagement(self)
 
 
@@ -56,7 +56,6 @@ class Chess:
         ui.timer(interval=1.0, callback=self.chess_room_management.check_for_updates)
 
     def create_chessboard(self):
-        self.chess_timer = ChessTimer()
         if app.storage.user.get('game_state_id') is None:
             room_dialog = ui.dialog().classes('w-full')
             with room_dialog, ui.card():

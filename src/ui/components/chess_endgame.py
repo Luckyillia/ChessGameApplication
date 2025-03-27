@@ -198,5 +198,5 @@ class ChessEndgame:
                 ui.button('Zobacz plansze', on_click=dialog.close).classes(
                     'bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500'
                 )
-
+        self.chess.chess_timer.timer_running = False
         dialog.open()

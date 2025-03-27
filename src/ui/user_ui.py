@@ -90,6 +90,7 @@ class UserUI:
 
     def logout(self) -> None:
         # Clear user session and navigate to login page
+        self.exit_room()
         app.storage.user.clear()
         ui.navigate.to('/login')
 

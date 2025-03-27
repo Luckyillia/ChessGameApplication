@@ -9,8 +9,10 @@ class ChessTimer:
         self.mode = False  # False = no timer, True = timed game
 
         # Timer display elements
-        self.white_display = ui.label('White: --:--').classes('text-xl font-bold mb-4')
-        self.black_display = ui.label('Black: --:--').classes('text-xl font-bold mb-4')
+        self.timer_container = ui.row().classes('w-full justify-between')
+        with self.timer_container:
+            self.black_display = ui.label('Black: --:--').classes('text-xl font-bold mb-4')
+            self.white_display = ui.label('White: --:--').classes('text-xl font-bold mb-4')
 
         # Timer mode selection dialog
         self.mode_dialog = ui.dialog().classes('w-96')
@@ -71,3 +73,28 @@ class ChessTimer:
         self.black_time = 0
         self.white_display.text = 'White: --:--'
         self.black_display.text = 'Black: --:--'
+
+    def display_white(self):
+        # Initialize timer displays with proper styling
+        self.white_display = ui.label('White: --:--').classes('text-xl font-bold mb-4')
+
+    def display_black(self):
+        # Initialize timer displays with proper styling
+        self.black_display = ui.label('Black: --:--').classes('text-xl font-bold mb-4')
+
+    def get_time(self):
+        return {
+            'mode': self.mode,
+            'white_time': self.white_time,
+            'black_time': self.black_time,
+            'timer_running': self.timer_running
+        }
+
+    def set_time(self, time):
+        self.white_time = time['white_time']
+        self.black_time = time['black_time']
+        self.mode = time['mode']
+        self.timer_running = time['timer_running']
+        white_str, black_str = self.formated_time()
+        self.white_display.text = f'White: {white_str}'
+        self.black_display.text = f'Black: {black_str}'
