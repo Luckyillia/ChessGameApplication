@@ -179,7 +179,7 @@ class ChessEndgame:
             self.chess.white_captured = []
             self.chess.black_captured = []
             self.move_count_since_last_capture_or_pawn_move = 0
-            GameStateService().restart_game_state(game_state_id, self.chess_room_management)
+            GameStateService().restart_game_state(game_state_id, self.chess_room_management, self.chess)
             self.chess.board = ChessBoard().init_board()
             self.chess.update_board()
             self.chess_room_management.save_game_state()

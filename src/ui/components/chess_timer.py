@@ -9,8 +9,8 @@ class ChessTimer:
         self.mode = False  # False = no timer, True = timed game
 
         # Timer display elements
-        self.white_display = ui.label('White: --:--')
-        self.black_display = ui.label('Black: --:--')
+        self.white_display = None
+        self.black_display = None
 
         # Timer mode selection dialog
         self.mode_dialog = ui.dialog().classes('w-96')
@@ -48,8 +48,8 @@ class ChessTimer:
 
     def start_timed_game(self):
         """Start a new timed game"""
-        self.white_time = int(self.white_time_input.value)
-        self.black_time = int(self.black_time_input.value)
+        self.white_time = int(self.white_time_input.value) * 60
+        self.black_time = int(self.black_time_input.value) * 60
         self.mode = True
         self.mode_dialog.close()
         white_str, black_str = self.formated_time()
@@ -71,3 +71,11 @@ class ChessTimer:
         self.black_time = 0
         self.white_display.text = 'White: --:--'
         self.black_display.text = 'Black: --:--'
+
+    def display_white(self):
+        # Initialize timer displays with proper styling
+        self.white_display = ui.label('White: --:--').classes('text-xl font-bold mb-4')
+
+    def display_black(self):
+        # Initialize timer displays with proper styling
+        self.black_display = ui.label('Black: --:--').classes('text-xl font-bold mb-4')
