@@ -80,12 +80,14 @@ class UserUI:
             with ui.tab_panel(four):
                 with ui.card().classes('m-auto'):
                     user = self.user_service.get_user(app.storage.user.get('user_id'))
-                    ui.label('Profile').classes('text-xl font-semibold text-primary text-center m-auto')
+                    ui.label('Profile').classes('text-xl font-semibold text-primary text-center')
                 
-                    ui.label(f'Imie: {user['name']}').classes('text-xl font-semibold text-primary text-center m-auto')
-                    name = ui.input('Imie', visible='False')
-                    ui.label(f'Nazwisko: {user['surname']}').classes('text-xl font-semibold text-primary text-center m-auto')
-                    ui.label(f'Nazwa uzytkownika: {user['username']}').classes('text-xl font-semibold text-primary text-center m-auto')
+                    ui.label(f'Imie: {user['name']}').classes('text-xl font-semibold text-primary text-center')
+                    name = ui.input('Imie')
+                    ui.label(f'Nazwisko: {user['surname']}').classes('text-xl font-semibold text-primary text-center')
+                    name = ui.input('Nazwisko')
+                    ui.label(f'Nazwa uzytkownika: {user['username']}').classes('text-xl font-semibold text-primary text-center')
+                    name = ui.input('Nazwa Uzytkownika')
                     ui.image(user['avatar']).classes('w-32 h-32 m-auto')
 
     async def handle_paste(self):
