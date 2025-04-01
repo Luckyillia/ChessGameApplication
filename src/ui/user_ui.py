@@ -25,6 +25,7 @@ class UserUI:
             one = ui.tab('Dodaj użytkownika')
             two = ui.tab('Lista użytkowników')
             three = ui.tab('Szachy')
+            four = ui.tab('Profile')
 
         self.room_dialog = ui.dialog().classes('w-full')
         with self.room_dialog, ui.card():
@@ -75,6 +76,17 @@ class UserUI:
 
             with ui.tab_panel(three):
                 self.chess.create_chessboard()
+
+            with ui.tab_panel(four):
+                with ui.card().classes('m-auto'):
+                    user = self.user_service.get_user(app.storage.user.get('user_id'))
+                    ui.label('Profile').classes('text-xl font-semibold text-primary text-center m-auto')
+                
+                    ui.label(f'Imie: {user['name']}').classes('text-xl font-semibold text-primary text-center m-auto')
+                    name = ui.input('Imie', visible='False')
+                    ui.label(f'Nazwisko: {user['surname']}').classes('text-xl font-semibold text-primary text-center m-auto')
+                    ui.label(f'Nazwa uzytkownika: {user['username']}').classes('text-xl font-semibold text-primary text-center m-auto')
+                    ui.image(user['avatar']).classes('w-32 h-32 m-auto')
 
     async def handle_paste(self):
         code = await ui.clipboard.read()

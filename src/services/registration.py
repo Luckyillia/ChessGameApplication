@@ -13,6 +13,7 @@ class Registration:
         self.avatar_url = self.generate_avatar()
 
         # Initialize input fields and their UI components
+        self.label = ui.label('Panel Rejestracji').classes('text-xl font-semibold text-primary text-center m-auto w-64')
         self.name_input = ui.input('Imię').classes('m-auto w-64')
         self.surname_input = ui.input('Nazwisko').classes('m-auto w-64')
         self.username_input = ui.input('Nazwa uzytkownika').classes('m-auto w-64')

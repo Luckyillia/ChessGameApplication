@@ -57,6 +57,7 @@ def login(redirect_to: str = '/') -> Optional[RedirectResponse]:
 
     # Render the login page
     with ui.card().classes('absolute-center'):
+        ui.label('Panel Logowania').classes('text-xl font-semibold text-primary text-center')
         username = ui.input('Nazwa uzytkownika').on('keydown.enter', try_login)
         password = ui.input('Haslo', password=True, password_toggle_button=True).on('keydown.enter', try_login)
         ui.button('Zaloguj', on_click=try_login)
